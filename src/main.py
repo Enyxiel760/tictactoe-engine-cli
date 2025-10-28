@@ -1,5 +1,15 @@
+def new_board():
+    board = [
+             [None, None, None],
+             [None, None, None],
+             [None, None, None]
+            ]
+    return board
+
 board = new_board()
 
+
+"""
 #loop through turns until game over
 loop forever:
     #TODO
@@ -28,4 +38,4 @@ loop forever:
         break
 
 #repeat until game over
-    
+    """
