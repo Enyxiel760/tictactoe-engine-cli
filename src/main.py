@@ -88,6 +88,12 @@ def get_winner(board):
         if val1 == val2 == val3 and val1 is not None:
             return val1
     return None
+
+def is_board_full(board):
+    for row in board:
+        if None in row:
+            return False
+    return True
     
 
 

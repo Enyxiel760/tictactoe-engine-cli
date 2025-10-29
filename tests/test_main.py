@@ -138,8 +138,21 @@ class TestGetWinner(unittest.TestCase):
 
         self.assertEqual(result, "O")
         
-        
-        
+class TestIsBoardFull(unittest.TestCase):
+
+    def test_is_board_full_empty(self):
+        board = main.new_board()
+        result = main.is_board_full(board)
+
+        self.assertFalse(result)
+
+    def test_is_board_full_true(self):
+        board = [["X", "X", "O"], 
+                 ["O", "O", "X"], 
+                 ["O", "X", "X"]]
+        result = main.is_board_full(board)
+
+        self.assertTrue(result)
 
 if __name__ == '__main__':
     unittest.main()
