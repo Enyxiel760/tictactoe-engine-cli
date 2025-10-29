@@ -89,5 +89,14 @@ class TestGetMove(unittest.TestCase):
         result = main.get_move()
         self.assertEqual(result, (2,2))
 
+class TestMakeMove(unittest.TestCase):
+
+    def test_make_move(self):
+        board = main.new_board()
+        new_board = main.make_move("X", (0, 0), board)
+
+        self.assertEqual(new_board[0][0], "X") # Check symbol was correctly placed
+        self.assertIsNone(board[0][0]) # Check we didn't mutate
+
 if __name__ == '__main__':
     unittest.main()

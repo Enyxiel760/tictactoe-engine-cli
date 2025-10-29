@@ -56,6 +56,18 @@ def get_move():
             # The int() function failed (e.g. a non-numerical value was entered)
             print("Invalid input. Please enter a number between 1 and 9")
 
+def make_move(symbol, move, board):
+    row, col = move
+    new_board = []
+
+    # Create a copy of the board to avoid mutation
+    for line in board:
+        new_board.append(line.copy())
+
+    new_board[row][col] = symbol
+
+    return new_board
+
 
 """
 #loop through turns until game over
