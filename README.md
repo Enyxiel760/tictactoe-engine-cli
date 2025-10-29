@@ -1,16 +1,29 @@
 # ❌🅾️ Python Tic-Tac-Toe (Console Game)
 
----
+This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed to run directly in the command line. 
 
-This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed to run directly in the command line. This project serves as an exercise in clean Python development, focusing on the following architectural principles:
 
+
+## Table of Contents
+
+1. [Architectural Principles](#architectural-principles)
+2. [How to Run the Game](#how-to-run-the-game)
+3. [Testing Instructions](#testing-instructions)
+4. [Project Structure](#project-structure)
+5. [License](#license)
+
+
+
+## Architectural Principles
+
+This project serves as an exercise in clean Python development, focusing on the following architectural principles:
 * **Immutability:** The core game state is maintained without mutation; every move returns a brand new copy of the board.
 * **Separation of Concerns:** Logic (checking winner, validating moves) is kept separate from I/O (getting input, rendering the board).
 * **Robust Testing:** Every major component is unit-tested using Python's `unittest` module, including techniques like mocking user input to ensure reliability.
 
----
 
-## 🚀 How to Run the Game
+
+## How to Run the Game
 
 This game runs directly in your command-line environment and requires no external dependencies beyond the standard Python library.
 
@@ -29,9 +42,9 @@ This game runs directly in your command-line environment and requires no externa
 
     The game will start immediately, display the position guide, and prompt the first player ('X') for a move.
 
----
 
-## ✅ Testing Instructions
+
+## Testing Instructions
 
 This project is built using a Test-Driven Development (TDD) approach, with every function verified by unit tests.
 
@@ -49,4 +62,26 @@ This project is built using a Test-Driven Development (TDD) approach, with every
 
 ### Expected Output
 
-A successful test run will be silent, showing only the final summary (the number of dots will correspond to the total number of tests):
+A successful test run will be silent, showing only the final summary indicating the number of tests run and that everything passed.
+
+
+
+## Project Structure
+
+The repository follows a standard modern Python layout:
+
+```text
+Tic_Tac_Toe/
+├── src/
+│   └── main.py             # All game logic (core functions, I/O)
+├── tests/
+│   └── test_main.py        # Unit tests for all functions in src/main.py
+├── .gitignore              # Defines files to ignore (venv, cache, IDE files)
+└── README.md               # This document
+```
+
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
