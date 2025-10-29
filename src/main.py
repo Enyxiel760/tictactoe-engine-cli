@@ -99,3 +99,16 @@ loop forever:
 
 #repeat until game over
     """
+
+if __name__ == '__main__':
+    board = new_board()
+    print("Board positions are numbered 1-9 like so:")
+    show_board_positions()
+    current_player = "X"
+    other_player = "O"
+
+    while True:
+        move = get_move()
+        board = make_move(current_player , move, board)
+        render(board)
+        current_player, other_player = other_player, current_player
