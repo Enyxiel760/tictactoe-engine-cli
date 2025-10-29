@@ -95,7 +95,10 @@ def is_board_full(board):
             return False
     return True
     
+def is_valid_move(move, board):
+    row, col = move
 
+    return board[row][col] is None
 
 """
 #loop through turns until game over

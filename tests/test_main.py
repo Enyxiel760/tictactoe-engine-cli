@@ -154,5 +154,20 @@ class TestIsBoardFull(unittest.TestCase):
 
         self.assertTrue(result)
 
+class TestIsValidMove(unittest.TestCase):
+
+    def test_is_valid_move_true(self):
+        board = main.new_board()
+        result = main.is_valid_move((0, 0), board)
+
+        self.assertTrue(result)
+
+    def test_is_valid_move_false(self):
+        board = main.new_board()
+        board[0][0] = "X"
+        result = main.is_valid_move((0, 0), board)
+
+        self.assertFalse(result)
+
 if __name__ == '__main__':
     unittest.main()
