@@ -100,37 +100,6 @@ def is_valid_move(move, board):
 
     return board[row][col] is None
 
-"""
-#loop through turns until game over
-loop forever:
-    #TODO
-    current_player = ???
-
-    #print trhe current borad state
-    render(board)
-
-    #get the move from current player
-    move = get_move()
-
-    #make the move on the board
-    make_move(board, current_player, move)
-
-    #work out if theirs a winner
-    winner = get_winner(board)
-
-    #if there is a winner, exit loop
-    if winner is not none:
-        print "winner is" winner
-        break
-
-    #if no winner and board full
-    if is_board_full(board):
-        print "draw"
-        break
-
-#repeat until game over
-    """
-
 if __name__ == '__main__':
     board = new_board()
     print("Board positions are numbered 1-9 like so:")
@@ -139,7 +108,23 @@ if __name__ == '__main__':
     other_player = "O"
 
     while True:
-        move = get_move()
+        while True:
+            move = get_move()
+            if is_valid_move(move, board):
+                break
+            else:
+                print("\nPlease select a valid position:")
+                render(board)
+
         board = make_move(current_player , move, board)
         render(board)
+
+        winner = get_winner(board)
+        if winner is not None:
+            print(f"{winner} won the round, congratulations!")
+            break
+        elif is_board_full(board):
+            print("No winners this time, better luck next time!")
+            break
+        
         current_player, other_player = other_player, current_player
