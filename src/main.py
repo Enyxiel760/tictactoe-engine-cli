@@ -25,7 +25,36 @@ def prettify_board(board):
 def render(board):
     print(prettify_board(board))
 
-board = new_board()
+def show_board_positions():
+    board_positions = dedent(f"""\
+    -------------
+    | 1 | 2 | 3 |
+    -------------
+    | 4 | 5 | 6 |
+    -------------
+    | 7 | 8 | 9 |
+    -------------
+    """)
+    print(board_positions)
+
+def get_move():
+    move = None
+    while True:
+        try:
+            move = input("Choose where to place next (1-9): ")
+            move = int(move)
+
+            if move in range (1, 10):
+                move -= 1 # account for zero-indexing
+                row = move // 3
+                col = move % 3
+                return (row , col)
+            else:
+                print("Invalid move. Please enter a number between 1 and 9.")
+        
+        except ValueError:
+            # The int() function failed (e.g. a non-numerical value was entered)
+            print("Invalid input. Please enter a number between 1 and 9")
 
 
 """

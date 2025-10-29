@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 import src.main as main
 from textwrap import dedent
 
@@ -61,6 +62,32 @@ class TestPrettifyBoard(unittest.TestCase):
 
         pretty_board = main.prettify_board(board)
         self.assertEqual(pretty_board, expected_board)
+
+@patch('src.main.input')
+class TestGetMove(unittest.TestCase):
+
+    def test_get_move_non_numeric(self, mock_input):
+        """Tests 'hello' then '5'."""
+        mock_input.side_effect = ["hello", "5"]
+        result = main.get_move()
+        self.assertEqual(result, (1,1))
+    
+    def test_get_move_valid_input(self, mock_input):
+        mock_input.return_value = "8"
+        result = main.get_move()
+        self.assertEqual(result, (2,1))
+
+    def test_get_move_low_boundary(self, mock_input):
+        """Tests '0' then '1'."""
+        mock_input.side_effect = ["0", "1"]
+        result = main.get_move()
+        self.assertEqual(result, (0,0))
+    
+    def test_get_move_high_boundary(self, mock_input):
+        """Tests '10' then '9'."""
+        mock_input.side_effect = ["10", "9"]
+        result = main.get_move()
+        self.assertEqual(result, (2,2))
 
 if __name__ == '__main__':
     unittest.main()
