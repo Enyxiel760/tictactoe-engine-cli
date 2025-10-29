@@ -98,5 +98,48 @@ class TestMakeMove(unittest.TestCase):
         self.assertEqual(new_board[0][0], "X") # Check symbol was correctly placed
         self.assertIsNone(board[0][0]) # Check we didn't mutate
 
+class TestGetWinner(unittest.TestCase):
+
+    def test_get_winner_empty_board(self):
+        board = main.new_board()
+        result = main.get_winner(board)
+
+        self.assertIsNone(result)
+
+    def test_get_winner_almost_win(self):
+        board = [["X", "X", None], 
+                 ["O", "O", None], 
+                 [None, "X", "O"]]
+        result = main.get_winner(board)
+
+        self.assertIsNone(result)
+
+    def test_get_winner_horizontal_win(self):
+        board = [["X", "X", None], 
+                 ["O", "O", None], 
+                 ["X", "X", "X"]]
+        result = main.get_winner(board)
+
+        self.assertEqual(result, "X")
+
+    def test_get_winner_vertical_win(self):
+        board = [["X", "X", None], 
+                 ["X", "O", None], 
+                 ["X", "O", "O"]]
+        result = main.get_winner(board)
+
+        self.assertEqual(result, "X")
+
+    def test_get_winner_diagonal_win(self):
+        board = [["X", "X", "O"], 
+                 ["O", "O", None], 
+                 ["O", "X", "X"]]
+        result = main.get_winner(board)
+
+        self.assertEqual(result, "O")
+        
+        
+        
+
 if __name__ == '__main__':
     unittest.main()

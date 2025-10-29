@@ -1,5 +1,16 @@
 from textwrap import dedent
 
+WINNING_LINE_POSITIONS = [
+    [(0, 0), (0, 1), (0, 2)],  # row 1
+    [(1, 0), (1, 1), (1, 2)],  # row 2
+    [(2, 0), (2, 1), (2, 2)],  # row 3
+    [(0, 0), (1, 0), (2, 0)],  # col 1
+    [(0, 1), (1, 1), (2, 1)],  # col 2
+    [(0, 2), (1, 2), (2, 2)],  # col 3
+    [(0, 0), (1, 1), (2, 2)],  # diag 1
+    [(0, 2), (1, 1), (2, 0)],  # diag 2
+] 
+
 def new_board():
     board = [
              [None, None, None],
@@ -67,6 +78,17 @@ def make_move(symbol, move, board):
     new_board[row][col] = symbol
 
     return new_board
+
+def get_winner(board):
+    for line in WINNING_LINE_POSITIONS:
+        line_values = [board[row][col] for row, col in line]
+
+        val1, val2, val3 = line_values
+
+        if val1 == val2 == val3 and val1 is not None:
+            return val1
+    return None
+    
 
 
 """
