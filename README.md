@@ -73,9 +73,10 @@ The repository follows a standard modern Python layout:
 ```text
 Tic_Tac_Toe/
 ├── src/
-│   └── main.py             # All game logic (core functions, I/O)
+│   ├── main.py             # Main game Loop
+│   └── engine.py           # All core game logic.
 ├── tests/
-│   └── test_main.py        # Unit tests for all functions in src/main.py
+│   └── test_engine.py      # Unit tests for all functions in src/engine.py
 ├── .gitignore              # Defines files to ignore (venv, cache, IDE files)
 └── README.md               # This document
 ```
