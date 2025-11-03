@@ -2,7 +2,7 @@ from textwrap import dedent
 from typing import List, Optional, Tuple, TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from src.players.abstract_player import AbstractPlayer
+    from src.players import AbstractPlayer
 
 WINNING_LINE_POSITIONS = [
     [(0, 0), (0, 1), (0, 2)],  # row 1
