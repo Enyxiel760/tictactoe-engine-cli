@@ -10,8 +10,8 @@ This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed 
 2. [How to Run the Game](#how-to-run-the-game)
 3. [Testing Instructions](#testing-instructions)
 4. [Project Structure](#project-structure)
-5. [License](#license)
-6. [Future Development & Learning Roadmap](#future-development--learning-roadmap)
+5. [Future Development & Learning Roadmap](#future-development--learning-roadmap)
+6. [License](#license)
 
 
 
