@@ -1,5 +1,8 @@
 from textwrap import dedent
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.players.abstract_player import AbstractPlayer
 
 WINNING_LINE_POSITIONS = [
     [(0, 0), (0, 1), (0, 2)],  # row 1
@@ -13,183 +16,150 @@ WINNING_LINE_POSITIONS = [
 ]
 
 
-def new_board() -> List[List[Optional[str]]]:
-    """Creates a new, empty 3x3 Tic-Tac-Tow board.
+class GameEngine:
+    """Manages the state and rules of the game."""
 
-    Returns:
-        List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to None.
-    """
+    def __init__(self, player_x: "AbstractPlayer", player_o: "AbstractPlayer"):
+        self.board = self._new_board()
+        self.player_x = player_x
+        self.player_o = player_o
+        self.current_player = player_x
 
-    board = [[None, None, None], [None, None, None], [None, None, None]]
-    return board
+    # --- Helpers ---
 
+    def get_board_state(self) -> List[List[Optional[str]]]:
+        """Provides the current, read-only board state.
+        Used by the AI player to request the board when calculating a move."""
 
-def prettify_board(board: List[List[Optional[str]]]) -> str:
-    """Converts the 2D board structure into a formatted string for display.
+        # Return a copy to prevent external modification
+        return [row[:] for row in self.board]
 
-    Cells containing None are visdually rendered as an empty space (" ").
+    def switch_player(self) -> None:
+        """Switches the current player to the other player"""
+        if self.current_player == self.player_x:
+            self.current_player = self.player_o
+        else:
+            self.current_player = self.player_x
 
-    Args:
-        board (List[List[Optional[str]]]): The current state of the game board.
+    # --- Core Game Logic ---
 
-    Returns:
-        str: The multi-line string representation of the board grid"""
+    def _new_board(self) -> List[List[Optional[str]]]:
+        """Creates a new, empty 3x3 Tic-Tac-Tow board.
 
-    p1, p2, p3, p4, p5, p6, p7, p8, p9 = [cell for row in board for cell in row]
-    pretty_board = dedent(
-        f"""\
-    -------------
-    | {p1 if p1 else " "} | {p2 if p2 else " "} | {p3 if p3 else " "} |
-    -------------
-    | {p4 if p4 else " "} | {p5 if p5 else " "} | {p6 if p6 else " "} |
-    -------------
-    | {p7 if p7 else " "} | {p8 if p8 else " "} | {p9 if p9 else " "} |
-    -------------
-    """
-    )
-    return pretty_board
+        Returns:
+            List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to None.
+        """
 
+        return [[None, None, None], [None, None, None], [None, None, None]]
 
-def render(board: List[List[Optional[str]]]) -> None:
-    """Prints the current state fo the game board to the console.
+    def prettify_board(self) -> str:
+        """Converts the 2D board structure into a formatted string for display.
 
-    It calls prettify_board() to get the formatted string before printing.
+        Cells containing None are visually rendered as an empty space (" ").
 
-    Args:
-        board (List[List[Optional[str]]]): The current state of the game board."""
+        Returns:
+            str: The multi-line string representation of the board grid"""
 
-    print(prettify_board(board))
+        pos = [cell for row in self.board for cell in row]
+        pretty_board = dedent(
+            f"""\
+        -------------
+        | {pos[0] if pos[0] else " "} | {pos[1] if pos[1] else " "} | {pos[2] if pos[2] else " "} |
+        -------------
+        | {pos[3] if pos[3] else " "} | {pos[4] if pos[4] else " "} | {pos[5] if pos[5] else " "} |
+        -------------
+        | {pos[6] if pos[6] else " "} | {pos[7] if pos[7] else " "} | {pos[8] if pos[8] else " "} |
+        -------------
+        """
+        )
+        return pretty_board
 
+    def render(self) -> None:
+        """Prints the current state fo the game board to the console.
 
-def show_board_positions():
-    """Displays a numerical guide for the Tic-Tac-Toe board positions(1-9).
+        It calls prettify_board() to get the formatted string before printing."""
 
-    This static guide helps the user understand how their number input maps to the game board.
-    """
+        print(self.prettify_board())
 
-    board_positions = dedent(
-        """\
-    -------------
-    | 1 | 2 | 3 |
-    -------------
-    | 4 | 5 | 6 |
-    -------------
-    | 7 | 8 | 9 |
-    -------------
-    """
-    )
-    print(board_positions)
+    def show_board_positions(self) -> None:
+        """Displays a numerical guide for the Tic-Tac-Toe board positions(1-9).
 
+        This static guide helps the user understand how their number input maps to the game board.
+        """
 
-def get_move() -> Tuple[int, int]:
-    """Prompts the current player for their move (1-9) and validates the input.
+        board_positions = dedent(
+            """\
+        -------------
+        | 1 | 2 | 3 |
+        -------------
+        | 4 | 5 | 6 |
+        -------------
+        | 7 | 8 | 9 |
+        -------------
+        """
+        )
+        print(board_positions)
 
-    This function loops indefinitely, handling non-numeric input and out-of-range
-    numbers until a valid move number (1 through 9) is entered. It then converts
-    the 1-indexed input into  0-indexed (row, column) coordinates.
+    def make_move(self, move: Tuple[int, int]) -> None:
+        """Places the current player's symbol in the given position on the internal board.
 
-    Returns:
-        Tuple[int, int]: The 0-indexed (row, column) coordinates for the move."""
+        This method mutates the game's internal board state directly.
 
-    move = None
-    while True:
-        try:
-            move = input("Choose where to place next (1-9): ")
-            move = int(move)
+        Args:
+            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
+        """
 
-            if move in range(1, 10):
-                move -= 1  # account for zero-indexing
-                row = move // 3
-                col = move % 3
-                return (row, col)
-            else:
-                print("Invalid move. Please enter a number between 1 and 9.")
+        symbol = self.current_player.marker
+        row, col = move
+        self.board[row][col] = symbol
 
-        except ValueError:
-            # The int() function failed (e.g. a non-numerical value was entered)
-            print("Invalid input. Please enter a number between 1 and 9")
+    def get_winner(self) -> Optional[str]:
+        """Checks the board for a winning condition.
 
+        It iterates through all 8 possible winning lines to determine if one player has
+        three identical, non-None symbols in a row.
 
-def make_move(
-    symbol: str, move: Tuple[int, int], board: List[List[Optional[str]]]
-) -> List[List[Optional[str]]]:
-    """Create a deep copy of the board and palces the player's symbol in the given position.
+        Returns:
+            Optional[str]: The winning player's symbol ('X' or 'O') if a winner is found,
+                           otherwise returns None"""
 
-    The original board state is preserved. This function assumes the move is valid and the position is empty.
+        for line in WINNING_LINE_POSITIONS:
+            line_values = [self.board[row][col] for row, col in line]
 
-    Args:
-        symbol (str): The player's marker ('X' or 'O').
-        move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
-        board (List[List[Optional[str]]]): The current state of the game board.
+            val1, val2, val3 = line_values
 
-    Returns:
-        List[List[Optional[str]]]: A new board instance with the move placed."""
+            if val1 == val2 == val3 and val1 is not None:
+                return val1
+        return None
 
-    row, col = move
-    new_board = []
+    def is_board_full(self) -> bool:
+        """Checks the game board to see iof all positions are occupied.
 
-    # Create a copy of the board to avoid mutation
-    for line in board:
-        new_board.append(line.copy())
+        It efficiently returns False as soon as it finds an empty space (None).
 
-    new_board[row][col] = symbol
+        Returns:
+            bool: True if the board is full,
+                False if at least one empty spot remains."""
 
-    return new_board
+        for row in self.board:
+            if None in row:
+                return False
+        return True
 
+    def is_valid_move(self, move: Tuple[int, int]) -> bool:
+        """Checks if a requested move position is currently empty (valid).
 
-def get_winner(board: List[List[Optional[str]]]) -> Optional[str]:
-    """Checks the board for a winning condition.
+        This function assumes the 'move' coordinate (row, col) are already within the legal
+        board range(0-2), as validate by the Player Object.
 
-    It iterates through all 8 possible winning lines to determine if one player has
-    three identical, non-None symbols in a row.
+        A move is valid if the cell at the given coordinates holds the value 'None'.
 
-    Args:
-        board (List[List[Optional[str]]]): The current state of the game board.
+        Args:
+            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
 
-    Returns:
-        Optional[str]: The winning player's symbol ('X' or 'O') if a winner is found,
-                       otherwise returns None"""
+        Returns:
+            bool: True if the cell is empty (valid to place a symbol),
+                False otherwise."""
 
-    for line in WINNING_LINE_POSITIONS:
-        line_values = [board[row][col] for row, col in line]
-
-        val1, val2, val3 = line_values
-
-        if val1 == val2 == val3 and val1 is not None:
-            return val1
-    return None
-
-
-def is_board_full(board: List[List[Optional[str]]]) -> bool:
-    """Checks the game board to see iof all positions are occupied.
-
-    It efficiently returns False as soon as it finds an empty space (None).
-
-    Args:
-        board (List[List[Optional[str]]]): The current state of the game board.
-
-    Returns:
-        bool: True if the board is full,
-              False if at least one empty spot remains."""
-
-    for row in board:
-        if None in row:
-            return False
-    return True
-
-
-def is_valid_move(move: Tuple[int, int], board: List[List[Optional[str]]]) -> bool:
-    """Checks if a requested move position is currently empty (valid).
-
-    A move is valid if the cell at the given coordinatres holds the value 'None'.
-
-    Args:
-        move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
-        board (List[List[Optional[str]]]): The current state of the game board.
-
-    Returns:
-        bool: True if the cell is empty (valid to place a symbol),
-              False otherwise."""
-
-    row, col = move
-    return board[row][col] is None
+        row, col = move
+        return self.board[row][col] is None
