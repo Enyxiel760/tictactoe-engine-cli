@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
 from .abstract_ai_player import AbstractAIPlayer
 from random import choice
 
@@ -30,7 +30,6 @@ class WinningMoveAIPlayer(AbstractAIPlayer):
         Returns:
             Optional[Tuple[int, int]]: The first move found that results in a win, or None if no
             winning move is available."""
-
         for move in moves:
             temp_state = [row.copy() for row in board_state]
             temp_state[move[0]][move[1]] = self.marker
@@ -53,7 +52,6 @@ class WinningMoveAIPlayer(AbstractAIPlayer):
 
         Returns:
             Tuple[int, int]: The (row, column) coordinates of the selected move."""
-
         moves = []
         for i in range(len(board_state)):
             for j in range(len(board_state[i])):

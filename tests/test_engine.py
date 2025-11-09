@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch
 from textwrap import dedent
 from src.engine import GameEngine
 from src.players.abstract_player import AbstractPlayer

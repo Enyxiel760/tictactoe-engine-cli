@@ -14,7 +14,6 @@ class HumanPlayer(AbstractPlayer):
 
         Returns:
             Tuple[int, int]: The 0-indexed (row, column) coordinates for the move."""
-
         while True:
             try:
                 prompt = (

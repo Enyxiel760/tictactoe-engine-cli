@@ -14,11 +14,10 @@ class TestWinningMoveAIPlayer(unittest.TestCase):
     def setUpClass(cls):
         """Initializes test fixtures for WinningMoveAIPlayer and GameEngine.
 
-        This setup creates two AI players and injects them into a GameEngine instance.
-        It also prepares board states for testing both winning and non-winning scenarios.
-        Instantiating WinningMoveAIPlayer implicitly validates its compliance with the
-        AbstractAIPlayer interface, raising a TypeError if any required methods are missing.
-        """
+        This setup creates two AI players and injects them into a GameEngine instance. It
+        also prepares board states for testing both winning and non-winning scenarios. Instantiating
+        WinningMoveAIPlayer implicitly validates its compliance with the AbstractAIPlayer interface,
+        raising a TypeError if any required methods are missing."""
         cls.player1 = WinningMoveAIPlayer(name="Test1", marker="O")
         cls.player2 = WinningMoveAIPlayer(name="Test2", marker="X")
         cls.engine = GameEngine(cls.player1, cls.player2)
@@ -36,7 +35,6 @@ class TestWinningMoveAIPlayer(unittest.TestCase):
 
         This test verifies that the AI correctly identifies a move that would result in
         an immediate win and selects it over any random alternatives."""
-
         expected_move = (0, 0)
         actual_move = self.player1._calculate_move(self.winning_board)
         self.assertEqual(expected_move, actual_move)
@@ -49,7 +47,6 @@ class TestWinningMoveAIPlayer(unittest.TestCase):
         - All valid (None) positions are identified.
         - The AI passes the correct list of valid moves to random.choice.
         - The fallback mechanism is triggered only when no winning move is found."""
-
         expected_moves = [(0, 0), (0, 1), (1, 0), (1, 1), (1, 2), (2, 2)]
         self.player1._calculate_move(self.non_winning_board)
         mock_choice.assert_called_with(expected_moves)

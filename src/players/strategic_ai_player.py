@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
 from .abstract_ai_player import AbstractAIPlayer
 from random import choice
 
@@ -34,7 +34,6 @@ class StrategicAIPlayer(AbstractAIPlayer):
         Returns:
             Optional[Tuple[int, int]]: A winning move if available; otherwise, the first blocking move;
             returns None if neither is found."""
-
         opponent_marker = "X" if self.marker == "O" else "O"
         blocking_move = None
         # Check for a win
@@ -67,7 +66,6 @@ class StrategicAIPlayer(AbstractAIPlayer):
 
         Returns:
             Tuple[int, int]: The (row, column) coordinates of the selected move."""
-
         moves = []
 
         for i in range(len(board_state)):

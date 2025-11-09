@@ -28,7 +28,6 @@ class AbstractAIPlayer(AbstractPlayer):
         Concrete subclasses will implement this differently according to the given AI's algorithmic
         strategy. Must implement this to return the chosen 0-indexed (row, col) coordinates.
         """
-
         pass
 
     def get_move(self) -> Tuple[int, int]:
@@ -36,6 +35,5 @@ class AbstractAIPlayer(AbstractPlayer):
         the GameEngine and dlegating the decision to _calculate_move.
 
         Note: This relies on set_engine() having been called previously."""
-
         current_board = self._game.get_board_state()
         return self._calculate_move(current_board)

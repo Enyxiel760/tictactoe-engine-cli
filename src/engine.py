@@ -1,5 +1,5 @@
 from textwrap import dedent
-from typing import List, Optional, Tuple, TYPE_CHECKING, Any
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.players import AbstractPlayer
@@ -30,7 +30,6 @@ class GameEngine:
     def get_board_state(self) -> List[List[Optional[str]]]:
         """Provides the current, read-only board state.
         Used by the AI player to request the board when calculating a move."""
-
         # Return a copy to prevent external modification
         return [row[:] for row in self.board]
 
@@ -47,9 +46,8 @@ class GameEngine:
         """Creates a new, empty 3x3 Tic-Tac-Tow board.
 
         Returns:
-            List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to None.
-        """
-
+            List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to
+            None."""
         return [[None, None, None], [None, None, None], [None, None, None]]
 
     def prettify_board(self) -> str:
@@ -59,7 +57,6 @@ class GameEngine:
 
         Returns:
             str: The multi-line string representation of the board grid"""
-
         pos = [cell for row in self.board for cell in row]
         pretty_board = dedent(
             f"""\
@@ -78,15 +75,13 @@ class GameEngine:
         """Prints the current state fo the game board to the console.
 
         It calls prettify_board() to get the formatted string before printing."""
-
         print(self.prettify_board())
 
     def show_board_positions(self) -> None:
         """Displays a numerical guide for the Tic-Tac-Toe board positions(1-9).
 
-        This static guide helps the user understand how their number input maps to the game board.
-        """
-
+        This static guide helps the user understand how their number input maps to the game
+        board."""
         board_positions = dedent(
             """\
         -------------
@@ -106,9 +101,8 @@ class GameEngine:
         This method mutates the game's internal board state directly.
 
         Args:
-            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
-        """
-
+            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the
+            move."""
         symbol = self.current_player.marker
         row, col = move
         self.board[row][col] = symbol
@@ -127,7 +121,6 @@ class GameEngine:
         Returns:
             Optional[str]: The symbol of the winning player ('X' or 'O') if a winning line is found;
                 otherwise, returns None."""
-
         if board_state is None:
             board_state = self.board
 
@@ -140,7 +133,7 @@ class GameEngine:
                 return val1
         return None
 
-    def is_board_full(self) -> bool:
+    def is_board_full(self, board_state=None) -> bool:
         """Checks the game board to see iof all positions are occupied.
 
         It efficiently returns False as soon as it finds an empty space (None).
@@ -148,8 +141,10 @@ class GameEngine:
         Returns:
             bool: True if the board is full,
                 False if at least one empty spot remains."""
+        if board_state is None:
+            board_state = self.board
 
-        for row in self.board:
+        for row in board_state:
             if None in row:
                 return False
         return True
@@ -168,6 +163,5 @@ class GameEngine:
         Returns:
             bool: True if the cell is empty (valid to place a symbol),
                 False otherwise."""
-
         row, col = move
         return self.board[row][col] is None

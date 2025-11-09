@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
 from .abstract_ai_player import AbstractAIPlayer
 from random import choice
 
@@ -24,7 +24,6 @@ class RandomAIPlayer(AbstractAIPlayer):
 
         Returns:
             Tuple[int, int]: The (row, column) coordinates of the selected move."""
-
         moves = []
         for i in range(len(board_state)):
             for j in range(len(board_state[i])):
