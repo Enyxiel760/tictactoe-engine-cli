@@ -16,13 +16,13 @@ class TestRandomAIPlayer(unittest.TestCase):
     """Tests the RandomAIPlayer._calculate_move method's implementation."""
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
         """Instantiate RandomAIPlayer for use in tests.
         This also implicitly validates the abstract base class contract:
         if RandomAIPlayer fails to implement any required abstract methods,
         instantiation will raise a TypeError here."""
-        self.player = RandomAIPlayer(name="Test", marker="X")
-        self.engine = MockEngine()
+        cls.player = RandomAIPlayer(name="Test", marker="X")
+        cls.engine = MockEngine()
 
     def test__calculate_move(self, mock_choice):
         """Unit test for random_ai_player._calculate_move to verify correct move selection logic.

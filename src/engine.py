@@ -113,18 +113,26 @@ class GameEngine:
         row, col = move
         self.board[row][col] = symbol
 
-    def get_winner(self) -> Optional[str]:
-        """Checks the board for a winning condition.
+    def get_winner(self, board_state=None) -> Optional[str]:
+        """Determines if the current or provided board state contains a winning line.
 
-        It iterates through all 8 possible winning lines to determine if one player has
-        three identical, non-None symbols in a row.
+        This method checks all predefined winning line combinations (rows, columns, diagonals)
+        to see if any contain three identical, non-None symbols. If a winning line is found,
+        the corresponding player's symbol is returned.
+
+        Args:
+            board_state (Optional[List[List[Optional[str]]]]): A 2D list representing the game board.
+                If None, the method uses the internal board state (`self.board`).
 
         Returns:
-            Optional[str]: The winning player's symbol ('X' or 'O') if a winner is found,
-                           otherwise returns None"""
+            Optional[str]: The symbol of the winning player ('X' or 'O') if a winning line is found;
+                otherwise, returns None."""
+
+        if board_state is None:
+            board_state = self.board
 
         for line in WINNING_LINE_POSITIONS:
-            line_values = [self.board[row][col] for row, col in line]
+            line_values = [board_state[row][col] for row, col in line]
 
             val1, val2, val3 = line_values
 
