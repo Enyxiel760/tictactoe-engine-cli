@@ -8,8 +8,8 @@ class TestHumanPlayerGetMove(unittest.TestCase):
     """Tests the HumanPlayer.get_move method's input validation (numeric and range) and coordinate conversion."""
 
     @classmethod
-    def setUpClass(cls):
-        cls.player = HumanPlayer(name="TestPlayer", marker="X")
+    def setUpClass(self):
+        self.player = HumanPlayer(name="TestPlayer", marker="X")
 
     def test_get_move_non_numeric(self, mock_input):
         """Tests that the function handles non-numeric input ('hello') by looping once and then

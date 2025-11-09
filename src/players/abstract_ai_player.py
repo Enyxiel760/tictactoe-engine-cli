@@ -1,10 +1,9 @@
 from typing import List, Optional, Tuple, TYPE_CHECKING
 from abc import abstractmethod
+from .abstract_player import AbstractPlayer
 
 if TYPE_CHECKING:
     from src.engine import GameEngine
-
-from .abstract_player import AbstractPlayer
 
 
 class AbstractAIPlayer(AbstractPlayer):
@@ -14,9 +13,6 @@ class AbstractAIPlayer(AbstractPlayer):
     provides the implemented 'get_move' method for the top-level contract"""
 
     _game: "GameEngine"
-
-    def __init__(self, name: str, marker: str):
-        super().__init__(name, marker)
 
     def set_engine(self, engine: "GameEngine"):
         """Public method to inject the GameEngine instance after the Player has been created
