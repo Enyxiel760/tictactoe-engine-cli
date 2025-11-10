@@ -1,6 +1,14 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import Iterator, Tuple, List, Optional, Type
 from src import players as p
+
+
+@dataclass(frozen=True)
+class PlayerMeta:
+    key: str
+    description: str
+    player_type: p.AbstractPlayer
 
 
 class PlayerType(Enum):
@@ -9,13 +17,25 @@ class PlayerType(Enum):
     Each member is a tuple of:
     - key (str): Difficulty identifier.
     - description (str): Human-readable label.
-    - player_class (type): Corresponding player class implementation."""
+    - player_type (AbstractPlayer): Corresponding player class implementation."""
 
-    HUMAN = ("0", "", p.HumanPlayer)
-    EASY = ("1", "Easy (Random)", p.RandomAIPlayer)
-    MEDIUM = ("2", "Medium (Checks for wins)", p.WinningMoveAIPlayer)
-    HARD = ("3", "Hard (Checks for wins and blocks)", p.StrategicAIPlayer)
-    IMPOSSIBLE = ("4", "Impossible (Perfect play)", p.MinimaxAIPlayer)
+    HUMAN = PlayerMeta("0", "", p.HumanPlayer)
+    EASY = PlayerMeta("1", "Easy (Random)", p.RandomAIPlayer)
+    MEDIUM = PlayerMeta("2", "Medium (Checks for wins)", p.WinningMoveAIPlayer)
+    HARD = PlayerMeta("3", "Hard (Checks for wins and blocks)", p.StrategicAIPlayer)
+    IMPOSSIBLE = PlayerMeta("4", "Impossible (Perfect play)", p.MinimaxAIPlayer)
+
+    @property
+    def key(self):
+        return self.value.key
+
+    @property
+    def description(self):
+        return self.value.description
+
+    @property
+    def player_type(self):
+        return self.value.player_type
 
     @classmethod
     def get_ai_options(cls) -> Iterator[Tuple[str, str]]:
@@ -26,8 +46,7 @@ class PlayerType(Enum):
             players."""
         for member in cls:
             if member != cls.HUMAN:
-                key, description, _ = member.value
-                yield key, description
+                yield member.key, member.description
 
     @classmethod
     def get_keys(cls) -> List[int]:
@@ -35,11 +54,7 @@ class PlayerType(Enum):
 
         Returns:
             List[int]: List of integer keys for all player types."""
-        keys = []
-        for member in cls:
-            key, _, _ = member.value
-            keys.append(int(key))
-        return keys
+        return [int(member.key) for member in cls]
 
     @classmethod
     def get_min_difficulty_key(cls) -> int:
@@ -67,6 +82,6 @@ class PlayerType(Enum):
         Returns:
             type: Corresponding player class, or None if not found."""
         for member in cls:
-            if member.value[0] == key:
-                return member.value[2]
+            if member.key == key:
+                return member.player_type
         return None

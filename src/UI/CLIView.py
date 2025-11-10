@@ -85,7 +85,7 @@ class CLIView:
 
         game_config = {}
         game_config["p1_name"] = self._get_human_name()
-        game_config["marker"] = self._choose_marker()
+        game_config["p1_marker"] = self._choose_marker()
         game_config["p2_type"] = (
             "0" if self._choose_play_mode() == "human" else self._choose_ai_difficulty()
         )

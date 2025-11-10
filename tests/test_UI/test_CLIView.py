@@ -81,7 +81,7 @@ class TestGetGameConfig(unittest.TestCase):
         mock_difficulty.return_value = "4"
         result = self.view.get_game_config()
         self.assertEqual(result["p1_name"], "Alice")
-        self.assertEqual(result["marker"], "O")
+        self.assertEqual(result["p1_marker"], "O")
         self.assertEqual(result["p2_type"], "4")
         self.assertEqual(result["p2_name"], "Bot")
         mock_name.assert_called_once()
@@ -98,7 +98,7 @@ class TestGetGameConfig(unittest.TestCase):
         mock_mode.return_value = "human"
         result = self.view.get_game_config()
         self.assertEqual(result["p1_name"], "Fred")
-        self.assertEqual(result["marker"], "X")
+        self.assertEqual(result["p1_marker"], "X")
         self.assertEqual(result["p2_type"], "0")
         self.assertEqual(result["p2_name"], "Alice")
         self.assertEqual(mock_name.call_count, 2)

@@ -10,7 +10,7 @@ class TestPlayerTypeEnum(unittest.TestCase):
         self.all_int_keys = PlayerType.get_keys()
         self.ai_options = list(PlayerType.get_ai_options())
         # Determine the Human key dynamically
-        self.human_key_int = int(PlayerType.HUMAN.value[0])
+        self.human_key_int = int(PlayerType.HUMAN.key)
 
     @property
     def ai_keys(self):
