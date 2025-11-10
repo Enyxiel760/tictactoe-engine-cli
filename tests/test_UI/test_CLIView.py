@@ -4,6 +4,7 @@ from textwrap import dedent
 from src.players.abstract_player import AbstractPlayer
 from src.UI import CLIView
 from src.engine import GameEngine
+from src.core import PlayerType
 
 
 class DummyPlayer(AbstractPlayer):
@@ -12,20 +13,6 @@ class DummyPlayer(AbstractPlayer):
 
     def get_move(self):
         return (0, 0)
-
-
-class TestCLIViewConstants(unittest.TestCase):
-    """Unit tests for constant values defined in the menu module.
-
-    Ensures that MIN_DIFFICULTY and MAX_DIFFICULTY correctly reflect the numeric bounds of
-    AI_DIFFICULTIES."""
-
-    def test_ai_difficulty_bounds(self):
-        """Verify that MIN_DIFFICULTY and MAX_DIFFICULTY match the minimum and maximum keys
-        in AI_DIFFICULTIES."""
-        keys = list(map(int, CLIView.AI_DIFFICULTIES.keys()))
-        self.assertEqual(CLIView.MIN_DIFFICULTY, min(keys))
-        self.assertEqual(CLIView.MAX_DIFFICULTY, max(keys))
 
 
 @patch("builtins.input")
@@ -53,12 +40,16 @@ class TestCLIView(unittest.TestCase):
         result = self.view._choose_marker()
         self.assertEqual(result, "X")
 
-    def test_choose_ai_difficulty(self, mock_input):
+    @patch.object(PlayerType, "get_max_difficulty_key")
+    @patch.object(PlayerType, "get_min_difficulty_key")
+    def test_choose_ai_difficulty(self, mock_min_key, mock_max_key, mock_input):
         """Simulate out-of-range difficulty inputs followed by a valid key.
         Assert that choose_ai_difficulty returns the valid difficulty key."""
         mock_input.side_effect = ["0", "5", "2"]
         result = self.view._choose_ai_difficulty()
         self.assertEqual(result, "2")
+        mock_min_key.assert_called()
+        mock_max_key.assert_called()
 
 
 @patch.object(CLIView, "_choose_ai_difficulty")

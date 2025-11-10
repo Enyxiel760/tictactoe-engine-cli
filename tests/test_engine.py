@@ -123,7 +123,3 @@ class TestIsValidMove(TestGameEngine):
         self.game.board[0][0] = "X"
         result = self.game.is_valid_move((0, 0))
         self.assertFalse(result)
-
-
-if __name__ == "__main__":
-    unittest.main()

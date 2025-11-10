@@ -1,5 +1,6 @@
-from src.engine import GameEngine
 from textwrap import dedent
+from src.engine import GameEngine
+from src.core import PlayerType
 
 
 class CLIView:
@@ -7,15 +8,6 @@ class CLIView:
 
     Provides validated input prompts for player setup and AI difficulty selection,
     and renders the game board in a human-readable format."""
-
-    AI_DIFFICULTIES = {
-        "1": "Easy (Random)",
-        "2": "Medium (Checks for wins)",
-        "3": "Hard (Checks for wins and blocks)",
-        "4": "Impossible (Perfect play)",
-    }
-    MIN_DIFFICULTY = min(map(int, AI_DIFFICULTIES))
-    MAX_DIFFICULTY = max(map(int, AI_DIFFICULTIES))
 
     _game: "GameEngine"  # Set via set_engine()
 
@@ -50,20 +42,23 @@ class CLIView:
         Validates input against the keys in AI_DIFFICULTIES.
         Returns:
             str: The chosen difficulty level key."""
+        MIN_KEY = PlayerType.get_min_difficulty_key()
+        MAX_KEY = PlayerType.get_max_difficulty_key()
+
+        valid_ai_keys = []
         prompt = "Choose your opponent's difficulty:\n"
-        for key, name in CLIView.AI_DIFFICULTIES.items():
-            prompt += f"  {key}) {name}\n"
-        prompt += (
-            f"Enter your choice ({CLIView.MIN_DIFFICULTY}-{CLIView.MAX_DIFFICULTY}): "
-        )
+        for key, description in PlayerType.get_ai_options():
+            valid_ai_keys.append(key)
+            prompt += f"  {key}) {description}\n"
+        prompt += f"Enter your choice ({MIN_KEY}-{MAX_KEY}): "
 
         while True:
             choice = input(prompt).strip()
-            if choice in CLIView.AI_DIFFICULTIES:
+            if choice in valid_ai_keys:
                 return choice
             else:
                 print(
-                    f"Invalid choice. Please enter a number between {CLIView.MIN_DIFFICULTY} and {CLIView.MAX_DIFFICULTY}"
+                    f"Invalid choice. Please enter a number between {MIN_KEY} and {MAX_KEY}"
                 )
 
     def _choose_play_mode(self) -> str:
