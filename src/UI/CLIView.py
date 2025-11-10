@@ -1,15 +1,13 @@
 from textwrap import dedent
-from src.engine import GameEngine
 from src.core import PlayerType
+from src.UI.abstract_view import AbstractView
 
 
-class CLIView:
+class CLIView(AbstractView):
     """Handles user input and board rendering for a command-line Tic-Tac-Toe game.
 
     Provides validated input prompts for player setup and AI difficulty selection,
     and renders the game board in a human-readable format."""
-
-    _game: "GameEngine"  # Set via set_engine()
 
     def _get_human_name(self) -> str:
         """Prompt the user to enter their name.
@@ -78,11 +76,17 @@ class CLIView:
                 print("Invalid choice. Please enter either 1 or 2.")
 
     def get_game_config(self) -> dict[str, str]:
-        """Collects and returns the game configuration from user input.
+        """Gathers player setup details from user input and returns a configuration dictionary.
+
+        This method collects the name and marker for Player 1, determines whether Player 2 is
+        human or AI, and assigns the appropriate name and difficulty key for Player 2.
 
         Returns:
-            dict[str, str]: A dictionary with keys 'name', 'marker', and 'player2'."""
-
+            dict[str, str]: A dictionary containing:
+                - "p1_name": Name of Player 1.
+                - "p1_marker": Marker chosen by Player 1 ("X" or "O").
+                - "p2_type": Difficulty key for Player 2 ("0" for human, otherwise AI key).
+                - "p2_name": Name of Player 2 ("Bot" if AI, otherwise user-provided)."""
         game_config = {}
         game_config["p1_name"] = self._get_human_name()
         game_config["p1_marker"] = self._choose_marker()
@@ -120,15 +124,8 @@ class CLIView:
         )
         return pretty_board
 
-    def render(self) -> None:
-        """Prints the current state fo the game board to the console.
+    def display_game_state(self) -> None:
+        """Fulfills the AbstractView contract and prints the current state of the game board to the console.
 
         It calls prettify_board() to get the formatted string before printing."""
         print(self.prettify_board())
-
-    def set_engine(self, engine: "GameEngine") -> None:
-        """Injects the game engine dependency into the view.
-
-        Args:
-            engine (GameEngine): The game engine instance to bind."""
-        self._game = engine

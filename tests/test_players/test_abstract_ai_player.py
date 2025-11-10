@@ -24,7 +24,6 @@ class CompleteAIPlayer(AbstractAIPlayer):
     received_board_state = None
 
     def _calculate_move(self, board_state):
-
         # Store the received state here for later test verification
         CompleteAIPlayer.received_board_state = board_state
 
