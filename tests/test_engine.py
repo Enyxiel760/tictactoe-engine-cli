@@ -1,5 +1,4 @@
 import unittest
-from textwrap import dedent
 from src.engine import GameEngine
 from src.players.abstract_player import AbstractPlayer
 
@@ -36,45 +35,6 @@ class TestNewBoard(TestGameEngine):
 
             for cell in row:
                 self.assertIsNone(cell)  # Check each cell is None
-
-
-class TestPrettifyBoard(TestGameEngine):
-    """Tests the prettify_board method's formatting on empty and fully occupied boards."""
-
-    def test_prettify_empty_board(self):
-        """Test that an empty board is formatted correctly, converting all None values to spaces (' ')."""
-        pretty_board = self.game.prettify_board()
-
-        expected_board = dedent(
-            """\
-            -------------
-            |   |   |   |
-            -------------
-            |   |   |   |
-            -------------
-            |   |   |   |
-            -------------
-        """
-        )
-        self.assertEqual(pretty_board, expected_board)
-
-    def test_prettify_full_board(self):
-        """Tests that a fully occupied board with 'X' and 'O' symbols is formatted correctly."""
-        self.game.board = [["X", "O", "O"], ["O", "O", "X"], ["X", "X", "O"]]
-
-        expected_board = dedent(
-            """\
-            -------------
-            | X | O | O |
-            -------------
-            | O | O | X |
-            -------------
-            | X | X | O |
-            -------------
-        """
-        )
-        pretty_board = self.game.prettify_board()
-        self.assertEqual(pretty_board, expected_board)
 
 
 class TestMakeMove(TestGameEngine):

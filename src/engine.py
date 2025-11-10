@@ -1,23 +1,21 @@
 from textwrap import dedent
-from typing import List, Optional, Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from src.players import AbstractPlayer
-
-WINNING_LINE_POSITIONS = [
-    [(0, 0), (0, 1), (0, 2)],  # row 1
-    [(1, 0), (1, 1), (1, 2)],  # row 2
-    [(2, 0), (2, 1), (2, 2)],  # row 3
-    [(0, 0), (1, 0), (2, 0)],  # col 1
-    [(0, 1), (1, 1), (2, 1)],  # col 2
-    [(0, 2), (1, 2), (2, 2)],  # col 3
-    [(0, 0), (1, 1), (2, 2)],  # diag 1
-    [(0, 2), (1, 1), (2, 0)],  # diag 2
-]
+from typing import List, Optional, Tuple
+from src.players import AbstractPlayer
 
 
 class GameEngine:
     """Manages the state and rules of the game."""
+
+    WINNING_LINE_POSITIONS = [
+        [(0, 0), (0, 1), (0, 2)],  # row 1
+        [(1, 0), (1, 1), (1, 2)],  # row 2
+        [(2, 0), (2, 1), (2, 2)],  # row 3
+        [(0, 0), (1, 0), (2, 0)],  # col 1
+        [(0, 1), (1, 1), (2, 1)],  # col 2
+        [(0, 2), (1, 2), (2, 2)],  # col 3
+        [(0, 0), (1, 1), (2, 2)],  # diag 1
+        [(0, 2), (1, 1), (2, 0)],  # diag 2
+    ]
 
     def __init__(self, player_x: "AbstractPlayer", player_o: "AbstractPlayer"):
         self.board = self._new_board()
@@ -31,7 +29,7 @@ class GameEngine:
         """Provides the current, read-only board state.
         Used by the AI player to request the board when calculating a move."""
         # Return a copy to prevent external modification
-        return [row[:] for row in self.board]
+        return self.board
 
     def switch_player(self) -> None:
         """Switches the current player to the other player"""
@@ -49,33 +47,6 @@ class GameEngine:
             List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to
             None."""
         return [[None, None, None], [None, None, None], [None, None, None]]
-
-    def prettify_board(self) -> str:
-        """Converts the 2D board structure into a formatted string for display.
-
-        Cells containing None are visually rendered as an empty space (" ").
-
-        Returns:
-            str: The multi-line string representation of the board grid"""
-        pos = [cell for row in self.board for cell in row]
-        pretty_board = dedent(
-            f"""\
-        -------------
-        | {pos[0] if pos[0] else " "} | {pos[1] if pos[1] else " "} | {pos[2] if pos[2] else " "} |
-        -------------
-        | {pos[3] if pos[3] else " "} | {pos[4] if pos[4] else " "} | {pos[5] if pos[5] else " "} |
-        -------------
-        | {pos[6] if pos[6] else " "} | {pos[7] if pos[7] else " "} | {pos[8] if pos[8] else " "} |
-        -------------
-        """
-        )
-        return pretty_board
-
-    def render(self) -> None:
-        """Prints the current state fo the game board to the console.
-
-        It calls prettify_board() to get the formatted string before printing."""
-        print(self.prettify_board())
 
     def show_board_positions(self) -> None:
         """Displays a numerical guide for the Tic-Tac-Toe board positions(1-9).
@@ -124,7 +95,7 @@ class GameEngine:
         if board_state is None:
             board_state = self.board
 
-        for line in WINNING_LINE_POSITIONS:
+        for line in GameEngine.WINNING_LINE_POSITIONS:
             line_values = [board_state[row][col] for row, col in line]
 
             val1, val2, val3 = line_values
