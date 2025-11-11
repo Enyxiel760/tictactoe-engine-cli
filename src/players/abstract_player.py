@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Tuple
 from abc import ABC, abstractmethod
 
 
@@ -14,5 +14,4 @@ class AbstractPlayer(ABC):
     def get_move(self) -> Tuple[int, int]:
         """Abstract method. Must be implemented by subclasses to aquire the next move.
         Returns the 0-indexed (row, col) coordinates for the move."""
-
         pass

@@ -1,7 +1,6 @@
 # ❌🅾️ Python Tic-Tac-Toe (Console Game)
 
-This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed to run directly in the command line. 
-
+A fully functional, turn-based Tic-Tac-Toe game playable in the command line. Supports both 1-player (vs AI) and 2-player modes, with multiple AI difficulty levels and a clean, test-driven architecture
 
 
 ## Table of Contents
@@ -9,7 +8,7 @@ This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed 
 1. [Architectural Principles](#architectural-principles)
 2. [How to Run the Game](#how-to-run-the-game)
 3. [Testing Instructions](#testing-instructions)
-4. [Project Structure](#project-structure)
+4. [Features & UX](#features--ux)
 5. [Future Development & Learning Roadmap](#future-development--learning-roadmap)
 6. [License](#license)
 
@@ -17,9 +16,11 @@ This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed 
 
 ## Architectural Principles
 
-This project serves as an exercise in clean Python development, focusing on the following architectural principles:
-* **Immutability:** The core game state is maintained without mutation; every move returns a brand new copy of the board.
-* **Separation of Concerns:** Logic (checking winner, validating moves) is kept separate from I/O (getting input, rendering the board).
+This project demonstrates clean Python architecture and test-driven development, with a focus on:
+
+* **Encapsulated State (OOP):** The **`GameEngine` class** manages board state, turn order, and win logic.
+* **Polymorphic Player Design:** All players (Human, AI) adhere to a unified `AbstractPlayer` interface, allowing the `GameEngine` to request a move without caring how that move is generated (Ask, Don't Tell principle).
+* **Separation of Concerns:** The architecture is layered: **Engine** (State/Rules), **Players** (Input/Decision Logic) and **UI** (presentation).
 * **Robust Testing:** Every major component is unit-tested using Python's `unittest` module, including techniques like mocking user input to ensure reliability.
 
 
@@ -38,16 +39,24 @@ This game runs directly in your command-line environment and requires no externa
 2.  Execute the game using the following command:
 
     ```bash
-    python src/main.py
+    python -m src.main
     ```
 
-    The game will start immediately, display the position guide, and prompt the first player ('X') for a move.
+3. Follow the prompts:
+  - Choose 1-player or 2-player mode
+  - Select your marker (X or O)
+  - If playing vs AI, choose difficulty:
+    - 1: Easy (Random)
+    - 2: Medium (Win-seeking)
+    - 3: Hard (Win + Block)
+    - 4: Impossible (Minimax)
+
 
 
 
 ## Testing Instructions
 
-This project is built using a Test-Driven Development (TDD) approach, with every function verified by unit tests.
+This project uses a TDD approach with full coverage of engine logic, player behavior, and factory instantiation.
 
 ### How to Run Tests
 
@@ -66,27 +75,20 @@ This project is built using a Test-Driven Development (TDD) approach, with every
 A successful test run will be silent, showing only the final summary indicating the number of tests run and that everything passed.
 
 
+## Features & UX
 
-## Project Structure
-
-The repository follows a standard modern Python layout:
-
-```text
-Tic_Tac_Toe/
-├── src/
-│   ├── main.py             # Main game Loop
-│   └── engine.py           # All core game logic.
-├── tests/
-│   └── test_engine.py      # Unit tests for all functions in src/engine.py
-├── .gitignore              # Defines files to ignore (venv, cache, IDE files)
-└── README.md               # This document
-```
+- ✅ 1-player and 2-player modes
+- ✅ Multiple AI difficulties (Random → Minimax)
+- ✅ Clear CLI prompts and board layout
+- ✅ AI “thinking” messages for immersive UX
+- ✅ Robust input validation and move enforcement
+- ✅ Modular, testable architecture
 
 
 
 ## Future Development & Learning Roadmap
 
-This project currently serves as a core demonstration of clean Python architecture and robust unit testing. The game engine logic has been strictly isolated to provide a solid, immutable foundation for extensive expansion.
+This project currently serves as a foundation for deeper learning in Python architecture, AI, and software design.
 
 The ideas below represent potential paths for exploration and learning. They are not commitments, but rather opportunities to tackle new domains of software development and showcase expanding skills.
 
@@ -94,8 +96,8 @@ The ideas below represent potential paths for exploration and learning. They are
 
 | Feature Idea | Technical Goal (What to Learn) | Architectural Impact |
 | :------------------------------- | :--- | :--- |
-| **Multi-Tier AI Opponent**       | Master algorithmic thinking by building AI difficulties: from Random Selection to Heuristic Algorithms (e.g., Minimax). | Requires a new `src/ai/` module. AI functions must be pure, consuming the immutable game state and returning a coordinate. |
-| **Advanced User Interface (UX)** | Explore human-computer interaction (HCI) concepts. Goals range from basic CLI enhancements (color, ASCII art flair) to full-scale Graphical User Interface (GUI) development (e.g., using Tkinter, PyQt, or a browser-based front-end). | Introduces a new layer of presentation logic. The existing `prettify_board()` function will be replaced or supplemented by new renderers that consume the state from `engine.py`. |
+| **Multi-Tier AI Opponent**       | Master algorithmic thinking by building AI difficulties: from Random Selection to Heuristic Algorithms (e.g., Minimax). | Requires a Player Hierarchy. New AI classes inherit from AbstractAIPlayer, requesting the live state from the injected GameEngine instance to calculate moves. |
+| **Advanced User Interface (UX)** | Explore human-computer interaction (HCI) concepts. Goals range from basic CLI enhancements (color, ASCII art flair) to full-scale Graphical User Interface (GUI) development (e.g., using Tkinter, PyQt, or a browser-based front-end). | Introduces a new layer of presentation logic. The existing `prettify_board()` function will be replaced or supplemented by new renderers that consume the state from the `GameEngine`'s public interface. |
 | **Persistent Player Statistics** | Explore data persistence by integrating a database layer. This involves learning about data modeling, relational schemas, and general CRUD (Create, Read, Update, Delete) operations. | Requires a new Persistence Layer that separates database logic from the game engine. New files would handle database connection, queries, and data mapping. |
 | **Local Network Multiplayer**    | Deep dive into networking protocols, specifically TCP/IP for connection handling and reliable data transfer. The goal is to separate the CLI interface into distinct Client and Server applications. | Requires a new `src/networking/` package. The game loop in `main.py` would need to be re-engineered to handle latency and state synchronization across two machines. |
 | **Real-Time Communication**      | Explore asynchronous programming concepts (e.g., `asyncio`). The objective is to manage a persistent, low-latency communication channel (for features like in-game chat) without blocking the core game's execution flow. | Introduces new challenges in concurrency and handling simultaneous data streams, requiring deep knowledge of non-blocking I/O. |
@@ -104,7 +106,7 @@ The ideas below represent potential paths for exploration and learning. They are
 ### Architectural Focus Moving Forward
 
 Every feature added will reinforce the project's original principles:
-* **Immutability**: The core engine.py will remain pure; new features will consume the state but not mutate it.
+* **Encapsulated State**: The core engine's state is mutated only through controlled methods (make_move), ensuring new features consume the state via public getters but do not bypass the engine's internal rules.
 * **Testing**: New modules (AI, DB, Network) will be covered by their own comprehensive unit and integration tests.
 * **Separation of Concerns**: Maintaining strict boundaries between Game Engine (logic), Persistence (database), and I/O (CLI/Network).
 
