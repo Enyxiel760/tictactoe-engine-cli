@@ -16,8 +16,8 @@ class TestGameEngine(unittest.TestCase):
 
     def setUp(self):
         """Set up a fresh GameEngine instance before each test."""
-        self.player_x = DummyPlayer("XPlayer", marker="X")
-        self.player_o = DummyPlayer("OPlayer", marker="O")
+        self.player_x = DummyPlayer("Alice", marker="X")
+        self.player_o = DummyPlayer("Fred", marker="O")
         self.game = GameEngine(self.player_x, self.player_o)
 
 
@@ -123,3 +123,46 @@ class TestIsValidMove(TestGameEngine):
         self.game.board[0][0] = "X"
         result = self.game.is_valid_move((0, 0))
         self.assertFalse(result)
+
+
+class TestGameEngineUtilities(TestGameEngine):
+    """Tests the new utility methods added to support the main controller loop."""
+
+    def test_get_current_player(self):
+        """Tests that get_current_player returns the correct object. Implicitly tests switch_player."""
+        self.assertIs(self.game.get_current_player(), self.player_x)
+        self.game.switch_player()
+        self.assertIs(self.game.get_current_player(), self.player_o)
+
+    def test_get_winner_name_win(self):
+        """Tests that get_winner_name returns the correct player's name (not marker) on a win."""
+        self.game.board = [["X", "X", "X"], ["O", None, None], [None, None, "O"]]
+        winner_name = self.game.get_winner_name(self.game.get_winner())
+        self.assertEqual(winner_name, "Alice")
+
+    def test_get_winner_name_draw(self):
+        """Tests that get_winner_name returns None when there is no winner (draw or ongoing)."""
+        self.game.board = [["X", "O", "X"], ["X", "O", "O"], ["O", "X", "X"]]
+        winner_name = self.game.get_winner_name(self.game.get_winner())
+        self.assertIsNone(winner_name)
+
+    def test_check_game_status_ongoing(self):
+        """Tests that check_game_status returns (False, None) for an ongoing game."""
+        self.game.board = [["X", "O", None], [None, None, None], [None, None, None]]
+        is_over, winner_marker = self.game.check_game_status()
+        self.assertFalse(is_over)
+        self.assertIsNone(winner_marker)
+
+    def test_check_game_status_win(self):
+        """Tests that check_game_status returns (True, 'X') on a winning board."""
+        self.game.board = [["X", "X", "X"], ["O", "O", None], [None, None, None]]
+        is_over, winner_marker = self.game.check_game_status()
+        self.assertTrue(is_over)
+        self.assertEqual(winner_marker, "X")
+
+    def test_check_game_status_draw(self):
+        """Tests that check_game_status returns (True, None) on a full, drawn board."""
+        self.game.board = [["X", "O", "X"], ["X", "O", "O"], ["O", "X", "O"]]
+        is_over, winner_marker = self.game.check_game_status()
+        self.assertTrue(is_over)
+        self.assertIsNone(winner_marker)

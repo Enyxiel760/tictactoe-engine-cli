@@ -16,9 +16,7 @@ class HumanPlayer(AbstractPlayer):
             Tuple[int, int]: The 0-indexed (row, column) coordinates for the move."""
         while True:
             try:
-                prompt = (
-                    f"{self.name}, choose where to place your next {self.marker} (1-9)"
-                )
+                prompt = f"{self.name}, choose where to place your next {self.marker} (1-9): "
                 move_input = input(prompt)
                 move = int(move_input)
 

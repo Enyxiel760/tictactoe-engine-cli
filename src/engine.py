@@ -28,7 +28,6 @@ class GameEngine:
     def get_board_state(self) -> List[List[Optional[str]]]:
         """Provides the current, read-only board state.
         Used by the AI player to request the board when calculating a move."""
-        # Return a copy to prevent external modification
         return self.board
 
     def switch_player(self) -> None:
@@ -37,6 +36,10 @@ class GameEngine:
             self.current_player = self.player_o
         else:
             self.current_player = self.player_x
+
+    def get_current_player(self) -> AbstractPlayer:
+        """Getter method to return self.current_player"""
+        return self.current_player
 
     # --- Core Game Logic ---
 
@@ -78,7 +81,9 @@ class GameEngine:
         row, col = move
         self.board[row][col] = symbol
 
-    def get_winner(self, board_state=None) -> Optional[str]:
+    def get_winner(
+        self, board_state: Optional[List[List[Optional[str]]]] = None
+    ) -> Optional[str]:
         """Determines if the current or provided board state contains a winning line.
 
         This method checks all predefined winning line combinations (rows, columns, diagonals)
@@ -104,8 +109,10 @@ class GameEngine:
                 return val1
         return None
 
-    def is_board_full(self, board_state=None) -> bool:
-        """Checks the game board to see iof all positions are occupied.
+    def is_board_full(
+        self, board_state: Optional[List[List[Optional[str]]]] = None
+    ) -> bool:
+        """Checks the game board to see if all positions are occupied.
 
         It efficiently returns False as soon as it finds an empty space (None).
 
@@ -136,3 +143,38 @@ class GameEngine:
                 False otherwise."""
         row, col = move
         return self.board[row][col] is None
+
+    def check_game_status(self) -> Tuple[bool, Optional[str]]:
+        """Evaluates the current game state and determines if the game is over.
+
+        This method checks for a winning condition or a full board to determine
+        whether the game has concluded. It returns a tuple indicating the game-over
+        status and the winning marker, if any.
+
+        Returns:
+            Tuple[bool, Optional[str]]:
+                - bool: True if the game is over (win or draw), False otherwise.
+                - Optional[str]: The winning marker ("X" or "O") if there is a winner,
+                  else None."""
+        winner_marker = self.get_winner()
+        is_full = self.is_board_full()
+        is_over = (winner_marker is not None) or is_full
+        return is_over, winner_marker
+
+    def get_winner_name(self, winner_marker: str) -> Optional[str]:
+        """Resolves the name of the winning player based on their marker.
+
+        Given a marker ("X" or "O"), this method returns the corresponding player's name.
+        If no winner exists (i.e., marker is None), it returns None.
+
+        Args:
+            winner_marker (str): The marker of the winning player ("X" or "O").
+
+        Returns:
+            Optional[str]: The name of the winning player, or None if no winner."""
+        if winner_marker is None:
+            return None
+        elif winner_marker == self.player_x.marker:
+            return self.player_x.name
+        elif winner_marker == self.player_o.marker:
+            return self.player_o.name

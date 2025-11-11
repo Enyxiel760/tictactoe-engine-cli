@@ -1,7 +1,6 @@
 # ❌🅾️ Python Tic-Tac-Toe (Console Game)
 
-This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed to run directly in the command line. 
-
+A fully functional, turn-based Tic-Tac-Toe game playable in the command line. Supports both 1-player (vs AI) and 2-player modes, with multiple AI difficulty levels and a clean, test-driven architecture
 
 
 ## Table of Contents
@@ -9,6 +8,7 @@ This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed 
 1. [Architectural Principles](#architectural-principles)
 2. [How to Run the Game](#how-to-run-the-game)
 3. [Testing Instructions](#testing-instructions)
+4. [Features & UX](#features--ux)
 5. [Future Development & Learning Roadmap](#future-development--learning-roadmap)
 6. [License](#license)
 
@@ -16,11 +16,11 @@ This is a fully functional, turn-based, two-player game of Tic-Tac-Toe designed 
 
 ## Architectural Principles
 
-This project serves as an exercise in clean Python development, focusing on the following architectural principles:
+This project demonstrates clean Python architecture and test-driven development, with a focus on:
 
-* **Encapsulated State (OOP):** The entire game state (the board, current player, and turn order) is **encapsulated** within the **`GameEngine` class**. The engine is responsible for safely and atomically **mutating** the board state upon valid moves.
-* **Polymorphic Player Design:** All players (Human, AI, Networked) adhere to a unified `AbstractPlayer` interface, allowing the `GameEngine` to request a move without caring how that move is generated (Ask, Don't Tell principle).
-* **Separation of Concerns:** The architecture is layered: **Engine** (State/Rules), **Players** (Input/Decision Logic).
+* **Encapsulated State (OOP):** The **`GameEngine` class** manages board state, turn order, and win logic.
+* **Polymorphic Player Design:** All players (Human, AI) adhere to a unified `AbstractPlayer` interface, allowing the `GameEngine` to request a move without caring how that move is generated (Ask, Don't Tell principle).
+* **Separation of Concerns:** The architecture is layered: **Engine** (State/Rules), **Players** (Input/Decision Logic) and **UI** (presentation).
 * **Robust Testing:** Every major component is unit-tested using Python's `unittest` module, including techniques like mocking user input to ensure reliability.
 
 
@@ -39,16 +39,24 @@ This game runs directly in your command-line environment and requires no externa
 2.  Execute the game using the following command:
 
     ```bash
-    python src/main.py
+    python -m src.main
     ```
 
-    The game will start immediately, display the position guide, and prompt the first player ('X') for a move.
+3. Follow the prompts:
+  - Choose 1-player or 2-player mode
+  - Select your marker (X or O)
+  - If playing vs AI, choose difficulty:
+    - 1: Easy (Random)
+    - 2: Medium (Win-seeking)
+    - 3: Hard (Win + Block)
+    - 4: Impossible (Minimax)
+
 
 
 
 ## Testing Instructions
 
-This project is built using a Test-Driven Development (TDD) approach, with every function verified by unit tests.
+This project uses a TDD approach with full coverage of engine logic, player behavior, and factory instantiation.
 
 ### How to Run Tests
 
@@ -67,10 +75,20 @@ This project is built using a Test-Driven Development (TDD) approach, with every
 A successful test run will be silent, showing only the final summary indicating the number of tests run and that everything passed.
 
 
+## Features & UX
+
+- ✅ 1-player and 2-player modes
+- ✅ Multiple AI difficulties (Random → Minimax)
+- ✅ Clear CLI prompts and board layout
+- ✅ AI “thinking” messages for immersive UX
+- ✅ Robust input validation and move enforcement
+- ✅ Modular, testable architecture
+
+
 
 ## Future Development & Learning Roadmap
 
-This project currently serves as a core demonstration of clean Python architecture and robust unit testing. The game engine logic has been strictly isolated to provide a solid, class-based, encapsulated foundation for extensive expansion.
+This project currently serves as a foundation for deeper learning in Python architecture, AI, and software design.
 
 The ideas below represent potential paths for exploration and learning. They are not commitments, but rather opportunities to tackle new domains of software development and showcase expanding skills.
 

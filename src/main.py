@@ -1,30 +1,71 @@
-from engine import *
+from src.engine import GameEngine
+from src import UI, players
+from src.core.player_factory import get_player_instances
 
-if __name__ == "__main__":
-    board = new_board()
-    print("Board positions are numbered 1-9 like so:")
-    show_board_positions()
-    current_player = "X"
-    other_player = "O"
+
+def main():
+    # --- Initialization ---
+
+    # 1. Instantiate the View
+    view = UI.CLIView()
+
+    # 2. Get configuration data from the View.
+    try:
+        setup_data = view.get_game_config()
+    except Exception as e:
+        print(f"\nFATAL ERROR: Failed to get game configuration. Error: {e}")
+        return  # Graceful exit
+
+    # 3. Use the Factory to create player instances
+    try:
+        player_x, player_o = get_player_instances(setup_data)
+    except Exception as e:
+        print(f"\nFATAL ERROR: Failed to create players from config. Error: {e}")
+        return  # Graceful exit
+
+    # 4. Instantiate Engine
+    engine_instance = GameEngine(player_x, player_o)
+
+    # 5. Inject dependencies
+    view.set_engine(engine_instance)
+    for player in (player_x, player_o):
+        if not isinstance(player, players.HumanPlayer):
+            player.set_engine(engine_instance)
+
+    # --- Game Loop ---
+    print("\n--- Game Starting! ---\n")
 
     while True:
-        while True:
-            move = get_move()
-            if is_valid_move(move, board):
-                break
-            else:
-                print("\nPlease select a valid position:")
-                render(board)
+        # 1. Check game Status
+        is_over, winner_marker = engine_instance.check_game_status()
+        if is_over:
+            break  # Exit loop if game is terminated
 
-        board = make_move(current_player, move, board)
-        render(board)
+        current_player = engine_instance.get_current_player()
 
-        winner = get_winner(board)
-        if winner is not None:
-            print(f"{winner} won the round, congratulations!")
-            break
-        elif is_board_full(board):
-            print("No winners this time, better luck next time!")
-            break
+        # 2. Display state
+        print(f"\n--- It's {current_player.name}'s turn ({current_player.marker}). ---")
+        view.display_game_state()
 
-        current_player, other_player = other_player, current_player
+        # 3. Carry out turn
+        move = current_player.get_move()
+        engine_instance.make_move(move)
+        engine_instance.switch_player()
+
+    # --- Game End ---
+
+    # 1. Render final board
+    view.display_game_state()
+
+    # 2. Determine and translate winner
+    winner_name = engine_instance.get_winner_name(winner_marker)
+
+    # 3. Display final result
+    if winner_name is not None:
+        print(f"\nGame Over! Winner: {winner_name}!")
+    else:
+        print("\nGame Over! It's a draw!")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,3 +1,4 @@
+import time
 from typing import List, Optional, Tuple, TYPE_CHECKING
 from abc import abstractmethod
 from .abstract_player import AbstractPlayer
@@ -35,5 +36,7 @@ class AbstractAIPlayer(AbstractPlayer):
         the GameEngine and dlegating the decision to _calculate_move.
 
         Note: This relies on set_engine() having been called previously."""
+        print(f"{self.name} is thinking...")
+        time.sleep(2)
         current_board = self._game.get_board_state()
         return self._calculate_move(current_board)
