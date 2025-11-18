@@ -1,61 +1,40 @@
-from src.controllers.abstract_controller import AbstractController
-from src.core.engine import GameEngine
-from src import views, players
-from src.core.player_factory import get_player_instances
+from src.controllers import AbstractController
+from src import views
 
 
 class CLIController(AbstractController):
+
     def __init__(self):
+        """
+        Initializes the CLIController with a CLI-based view and prepares the game engine placeholder.
+
+        Attributes:
+            view (CLIView): The command-line interface view for user interaction.
+            engine (GameEngine | None): The core game engine, instantiated during setup.
+        """
         self.view = views.CLIView()
-        self.engine = None
 
     def run(self) -> None:
-        """The main entry point called by main.py"""
-        # Setup Phase
-        if not self._setup_game():
+        """
+        Orchestrates the full game lifecycle: setup, gameplay loop, and end-of-game handling.
+
+        This method is the primary entry point invoked by main.py. It ensures the game is properly
+        configured before entering the main loop, and gracefully handles termination.
+        """
+        if not self.setup_game():
             return  # Exit if setup failed (e.g. bad config)
 
-        # Game Loop Phase
         self._play_game()
-
-        # End Phase
         self._handle_game_over()
 
-    def _setup_game(self) -> bool:
-        """Handles View creation, Config, Factory, and DI."""
-
-        # Get Config
-        try:
-            setup_data = self.view.get_game_config()
-        except Exception as e:
-            self.view.display_error(
-                f"\nFATAL ERROR: Failed to get game configuration. Error: {e}"
-            )
-            return False
-
-        # Create Players
-        try:
-            player_x, player_o = get_player_instances(setup_data)
-        except Exception as e:
-            self.view.display_error(
-                f"\nFATAL ERROR: Failed to create players from config. Error: {e}"
-            )
-            return False
-
-        # Instantiate Engine
-        self.engine = GameEngine(player_x, player_o)
-
-        # Inject Dependencies
-        self.view.set_engine(self.engine)
-        for player in (player_x, player_o):
-            if not isinstance(player, players.HumanPlayer):
-                player.set_engine(self.engine)
-
-        return True
-
     def _play_game(self):
-        """The main while loop."""
-        print("\n--- Game Starting! ---\n")
+        """
+        Executes the main game loop, alternating turns between players until the game concludes.
+
+        Handles move validation, board updates, and player switching. Displays game state
+        and prompts for input on each turn.
+        """
+        self.view.display_message("\n--- Game Starting! ---\n")
 
         while True:
             # Check Status
@@ -83,11 +62,13 @@ class CLIController(AbstractController):
             self.engine.switch_player()
 
     def _handle_game_over(self):
-        """Final rendering and winner announcement."""
-        # Render final board
+        """
+        Finalizes the game by rendering the board and announcing the winner.
+
+        Retrieves the winning marker from the engine and delegates winner display to the view.
+        """
         self.view.display_game_state()
 
-        # Determine winner
         _, winner_marker = self.engine.check_game_status()
         winner_name = self.engine.get_winner_name(winner_marker)
 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.core.engine import GameEngine
+from src.core import GameEngine
 
 
 class AbstractView(ABC):
