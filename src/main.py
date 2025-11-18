@@ -49,6 +49,9 @@ def main():
 
         # 3. Carry out turn
         move = current_player.get_move()
+        while not engine_instance.is_valid_move(move):
+            print("Invalid move. Can only place marker on empty spots.")
+            move = current_player.get_move()
         engine_instance.make_move(move)
         engine_instance.switch_player()
 
