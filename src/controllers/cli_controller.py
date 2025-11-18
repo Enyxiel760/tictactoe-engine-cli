@@ -1,6 +1,6 @@
 from src.controllers.abstract_controller import AbstractController
-from src.engine import GameEngine
-from src import UI, players
+from src.core.engine import GameEngine
+from src import views, players
 from src.core.player_factory import get_player_instances
 
 
@@ -24,20 +24,24 @@ class CLIController(AbstractController):
     def _setup_game(self) -> bool:
         """Handles View creation, Config, Factory, and DI."""
         # 1. Instantiate View
-        self.view = UI.CLIView()
+        self.view = views.cli_view()
 
         # 2. Get Config
         try:
             setup_data = self.view.get_game_config()
         except Exception as e:
-            print(f"\nFATAL ERROR: Failed to get game configuration. Error: {e}")
+            self.view.display_error(
+                f"\nFATAL ERROR: Failed to get game configuration. Error: {e}"
+            )
             return False
 
         # 3. Create Players
         try:
             player_x, player_o = get_player_instances(setup_data)
         except Exception as e:
-            print(f"\nFATAL ERROR: Failed to create players from config. Error: {e}")
+            self.view.display_error(
+                f"\nFATAL ERROR: Failed to create players from config. Error: {e}"
+            )
             return False
 
         # 4. Instantiate Engine
@@ -64,7 +68,7 @@ class CLIController(AbstractController):
             current_player = self.engine.get_current_player()
 
             # Display State
-            print(
+            self.view.display_message(
                 f"\n--- It's {current_player.name}'s turn ({current_player.marker}). ---"
             )
             self.view.display_game_state()
@@ -72,7 +76,9 @@ class CLIController(AbstractController):
             # Get Move
             move = current_player.get_move()
             while not self.engine.is_valid_move(move):
-                print("Invalid move. Can only place marker on empty spots.")
+                self.view.display_error(
+                    "Invalid move. Can only place marker on empty spots."
+                )
                 move = current_player.get_move()
 
             self.engine.make_move(move)
@@ -87,7 +93,4 @@ class CLIController(AbstractController):
         _, winner_marker = self.engine.check_game_status()
         winner_name = self.engine.get_winner_name(winner_marker)
 
-        if winner_name is not None:
-            print(f"\nGame Over! Winner: {winner_name}!")
-        else:
-            print("\nGame Over! It's a draw!")
+        self.view.display_winner(winner_name)

@@ -40,7 +40,11 @@ class TestAbstractAIPlayer(unittest.TestCase):
         CompleteAIPlayer.received_board_state = None
 
     def test_abstract_enforces_calculate_move(self):
-        """Tests that subclasses must implement the _calculate_move method."""
+        """Tests that subclasses must implement the _calculate_move method.
+
+        Note:
+        Whilst this is generally redundant (testing the language, not the logic).
+        This test is retained here as an academic exercise."""
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
             IncompleteAIPlayer(name="Fail", marker="F")
 
