@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Dict
 from src.core.engine import GameEngine
 
 
@@ -20,7 +19,7 @@ class AbstractView(ABC):
         self._game = engine
 
     @abstractmethod
-    def get_game_config(self) -> Dict[str, str]:
+    def get_game_config(self) -> dict[str, str]:
         """Abstract method to collect all necessary game setup data (names, markers, difficulty).
 
         The implementing subclass MUST return dict[str, str]: A dictionary containing:
