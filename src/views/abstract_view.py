@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict
-from src.engine import GameEngine
+from src.core.engine import GameEngine
 
 
 class AbstractView(ABC):
@@ -36,4 +36,19 @@ class AbstractView(ABC):
 
         This method is called by the Controller during the game loop and takes no direct arguments.
         The implementation must internally fetch the board state from self._game."""
+        pass
+
+    @abstractmethod
+    def display_message(self, message: str) -> None:
+        """General info for the user"""
+        pass
+
+    @abstractmethod
+    def display_error(self, message: str) -> None:
+        """Warning/Error feedback"""
+        pass
+
+    @abstractmethod
+    def display_winner(self, winner_name: str) -> None:
+        """End of game announcement"""
         pass

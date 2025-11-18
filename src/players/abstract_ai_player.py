@@ -4,7 +4,7 @@ from abc import abstractmethod
 from .abstract_player import AbstractPlayer
 
 if TYPE_CHECKING:
-    from src.engine import GameEngine
+    from src.core.engine import GameEngine
 
 
 class AbstractAIPlayer(AbstractPlayer):

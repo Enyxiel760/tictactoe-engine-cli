@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 from src.players.winning_move_ai_player import WinningMoveAIPlayer
-from src.engine import GameEngine
+from src.core.engine import GameEngine
 
 
 class TestWinningMoveAIPlayer(unittest.TestCase):

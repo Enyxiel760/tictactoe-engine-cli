@@ -1,6 +1,6 @@
 import unittest
 from src.players.minimax_ai_player import MinimaxAIPlayer
-from src.engine import GameEngine
+from src.core.engine import GameEngine
 
 
 class TestMinimaxAIPlayer(unittest.TestCase):

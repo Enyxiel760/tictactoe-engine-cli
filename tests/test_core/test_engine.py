@@ -1,5 +1,5 @@
 import unittest
-from src.engine import GameEngine
+from src.core.engine import GameEngine
 from src.players.abstract_player import AbstractPlayer
 
 

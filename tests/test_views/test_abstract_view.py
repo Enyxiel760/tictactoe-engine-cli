@@ -1,5 +1,5 @@
 import unittest
-from src.UI.abstract_view import AbstractView
+from src.views.abstract_view import AbstractView
 
 
 class MockEngine:
@@ -23,6 +23,15 @@ class MockCompleteView(AbstractView):
     def display_game_state(self):
         pass
 
+    def display_message(self, message: str):
+        pass
+
+    def display_error(self, message: str):
+        pass
+
+    def display_winner(self, winner_name: str):
+        pass
+
 
 class TestAbstractView(unittest.TestCase):
 
@@ -30,7 +39,12 @@ class TestAbstractView(unittest.TestCase):
         self.mock_engine = MockEngine()
 
     def test_abstract_methods_are_enforced(self):
-        """Tests that attempting to instantiate an incomplete subclass raises TypeError."""
+        """Tests that attempting to instantiate an incomplete subclass raises TypeError.
+
+        Note:
+        Whilst this is generally redundant (testing the language, not the logic).
+        This test is retained here as an academic exercise."""
+
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
             MockIncompleteView()
 

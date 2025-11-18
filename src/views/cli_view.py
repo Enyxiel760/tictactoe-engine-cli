@@ -1,6 +1,6 @@
 from textwrap import dedent
 from src.core import PlayerType
-from src.UI.abstract_view import AbstractView
+from src.views.abstract_view import AbstractView
 
 
 class CLIView(AbstractView):
@@ -129,3 +129,18 @@ class CLIView(AbstractView):
 
         It calls prettify_board() to get the formatted string before printing."""
         print(self.prettify_board())
+
+    def display_message(self, message: str) -> None:
+        """General info for the user"""
+        print(f"\n{message}")
+
+    def display_error(self, error: str) -> None:
+        """Warning/Error feedback"""
+        print(f"!!! {error} !!!")
+
+    def display_winner(self, winner_name: str) -> None:
+        """End of game announcement"""
+        if winner_name:
+            print(f"\n*** Game Over! Winner: {winner_name}! ***")
+        else:
+            print(f"\n*** Game Over! It's a draw! ***")

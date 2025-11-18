@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch
 from textwrap import dedent
 from src.players.abstract_player import AbstractPlayer
-from src.UI import CLIView
-from src.engine import GameEngine
+from src.views import CLIView
+from src.core.engine import GameEngine
 from src.core import PlayerType
 
 
@@ -148,3 +148,27 @@ class TestPrettifyBoard(unittest.TestCase):
         )
         pretty_board = self.view.prettify_board()
         self.assertEqual(pretty_board, expected_board)
+
+
+@patch("builtins.print")
+class TestDisplayMethods(unittest.TestCase):
+    """Tests for the new display methods to ensure correct formatting."""
+
+    def setUp(self):
+        self.view = CLIView()
+
+    def test_display_error_formatting(self, mock_print):
+        """Test that errors are wrapped in '!!!'."""
+        self.view.display_error("Something went wrong")
+        # Verify the exact string formatting you defined
+        mock_print.assert_called_with("!!! Something went wrong !!!")
+
+    def test_display_winner_with_name(self, mock_print):
+        """Test winner announcement formatting."""
+        self.view.display_winner("Alice")
+        mock_print.assert_called_with("\n*** Game Over! Winner: Alice! ***")
+
+    def test_display_winner_draw(self, mock_print):
+        """Test draw announcement formatting."""
+        self.view.display_winner(None)
+        mock_print.assert_called_with("\n*** Game Over! It's a draw! ***")

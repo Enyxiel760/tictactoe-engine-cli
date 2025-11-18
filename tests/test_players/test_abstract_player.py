@@ -16,7 +16,11 @@ class CompletePlayer(AbstractPlayer):
 class TestAbstractPlayerContract(unittest.TestCase):
 
     def test_abstract_player_enforce_get_move(self):
-        """Tests that attempting to instantiate an incomplete subclass raises TypeError."""
+        """Tests that attempting to instantiate an incomplete subclass raises TypeError.
+
+        Note:
+        Whilst this is generally redundant (testing the language, not the logic).
+        This test is retained here as an academic exercise."""
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
             IncompletePlayer(name="Fail", marker="F")
 

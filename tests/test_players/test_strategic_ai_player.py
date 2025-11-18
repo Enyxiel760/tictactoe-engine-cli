@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 from src.players.strategic_ai_player import StrategicAIPlayer
-from src.engine import GameEngine
+from src.core.engine import GameEngine
 
 
 class TestStrategicAIPlayer(unittest.TestCase):
