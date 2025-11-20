@@ -1,6 +1,8 @@
 from textwrap import dedent
-from typing import List, Optional, Tuple
-from src.players import AbstractPlayer
+from typing import List, Optional, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.players import AbstractPlayer
 
 
 class GameEngine:
@@ -37,7 +39,7 @@ class GameEngine:
         else:
             self.current_player = self.player_x
 
-    def get_current_player(self) -> AbstractPlayer:
+    def get_current_player(self) -> "AbstractPlayer":
         """Getter method to return self.current_player"""
         return self.current_player
 

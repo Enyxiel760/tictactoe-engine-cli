@@ -1,5 +1,9 @@
 from src.views import AbstractView
 import tkinter as tk
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.controllers import GUIController
 
 
 class GUIView(AbstractView):
@@ -11,6 +15,15 @@ class GUIView(AbstractView):
         self.status_label = None
         self._build_board()
         self._build_status_bar()
+        self._controller: "GUIController"
+
+    def set_controller(self, controller: "GUIController") -> None:
+        """Injects the Controller reference for handling input callbacks."""
+        self._controller = controller
+
+    def handle_click(self, row: int, col: int) -> None:
+        """Receives input from the button click and delegates it to the Controller."""
+        self._controller.handle_move(row, col)
 
     def _build_board(self) -> None:
         """Creates and places the 9 game buttons"""
@@ -18,7 +31,12 @@ class GUIView(AbstractView):
             button_row = []
             for col in range(3):
                 button = tk.Button(
-                    self.root, text=" ", width=4, height=2, font=("Ariel", 24)
+                    self.root,
+                    text=" ",
+                    width=4,
+                    height=2,
+                    font=("Ariel", 24),
+                    command=lambda r=row, c=col: self.handle_click(r, c),
                 )
                 button.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
                 button_row.append(button)

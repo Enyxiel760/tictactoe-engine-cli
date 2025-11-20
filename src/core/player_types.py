@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterator, Tuple, List, Optional, Type
+from typing import Iterator, Tuple, List, Optional
 from src import players as p
 
 

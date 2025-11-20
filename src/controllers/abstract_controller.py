@@ -1,15 +1,18 @@
 from abc import ABC, abstractmethod
 from src.core import GameEngine
-from src.views import AbstractView
 from src.core.player_factory import get_player_instances
 from src import players
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.views import AbstractView
 
 
 class AbstractController(ABC):
     """The blueprint for all game controllers (CLI, GUI, Web, etc.).
     Responsible for the game lifecycle."""
 
-    view: AbstractView
+    view: "AbstractView"
     engine: GameEngine | None = None
 
     @abstractmethod

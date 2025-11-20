@@ -1,13 +1,12 @@
 import unittest
 from unittest.mock import MagicMock
-from src.controllers.cli_controller import CLIController
+from src.controllers import CLIController
 from src.players import HumanPlayer
 
 
 class TestCLIController(unittest.TestCase):
     def setUp(self):
         self.controller = CLIController()
-        # Mock the components so we don't actually run the engine or print
         self.controller.view = MagicMock()
         self.controller.engine = MagicMock()
 
@@ -21,7 +20,6 @@ class TestCLIController(unittest.TestCase):
         4. Player sends Valid Move
         5. Engine says 'True' (valid)
         """
-        # Setup a fake player
         mock_player = MagicMock(spec=HumanPlayer)
         mock_player.name = "TestBot"
         mock_player.marker = "X"
@@ -42,13 +40,17 @@ class TestCLIController(unittest.TestCase):
             (True, "X"),  # End of loop
         ]
 
-        # Run the specific game loop method (not the whole run method)
         self.controller._play_game()
 
-        # ASSERTION: Did we show the error?
         self.controller.view.display_error.assert_called_with(
             "Invalid move. Can only place marker on empty spots."
         )
 
-        # ASSERTION: Did we ask for a move twice?
         self.assertEqual(mock_player.get_move.call_count, 2)
+        self.controller.engine.make_move.assert_called_once_with(2)
+        self.controller.engine.switch_player.assert_called_once()
+        self.controller.view.display_game_state.assert_called_once()
+        self.assertEqual(self.controller.view.display_message.call_count, 2)
+        self.controller.view.display_message.assert_called_with(
+            "\n--- It's TestBot's turn (X). ---"
+        )

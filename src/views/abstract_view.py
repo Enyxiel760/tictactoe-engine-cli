@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from src.core import GameEngine
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.core import GameEngine
 
 
 class AbstractView(ABC):
