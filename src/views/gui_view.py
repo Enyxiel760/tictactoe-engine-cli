@@ -1,4 +1,5 @@
 from src.views import AbstractView
+from src.core import GameState
 import tkinter as tk
 from typing import TYPE_CHECKING
 
@@ -7,45 +8,160 @@ if TYPE_CHECKING:
 
 
 class GUIView(AbstractView):
+    """GUI-based view for rendering Tic-Tac-Toe screens and handling user interactions.
+
+    This class manages the layout and transitions between different game states,
+    delegates input events to the controller, and provides methods for updating the GUI.
+    """
 
     def __init__(self, master):
+        """Initializes the GUI view and sets up the root container.
+
+        Creates the main layout frame, configures grid weights, and prepares the view manager
+        for handling state-based screen transitions.
+        """
+
         self.root = master
         self.root.title("Tic-Tac-Toe")
+
         self.board_buttons = []
-        self.status_label = None
-        self._build_board()
-        self._build_status_bar()
         self._controller: "GUIController"
 
+        self.container = tk.Frame(self.root)
+        self.views_map = {}  # Holds map of State -> Creator method
+        self.frames = {}  # Holds map of State -> Frame instance
+        self.container.grid(row=0, column=0, sticky="nsew")
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
+        self.container.grid_rowconfigure(0, weight=1)
+
+        self._setup_view_manager()
+
+    def _setup_view_manager(self) -> None:
+        """Populates the mapping of GameState enums to their corresponding frame creation methods."""
+        self.views_map = {
+            GameState.WELCOME_SCREEN: self._create_welcome_frame,
+            GameState.PLAYER_CREATION: self._create_newplayer_frame,
+            GameState.MAIN_MENU: self._create_menu_frame,
+            GameState.GAMEPLAY: self._create_gameplay_frame,
+            GameState.GAME_OVER: self._create_game_over_frame,
+        }
+
+    def _create_welcome_frame(self) -> tk.Frame:
+        """Creates the welcome screen with a canvas prompt and binds input events.
+
+        Returns:
+            tk.Frame: The frame containing the welcome canvas.
+        """
+        welcome_frame = tk.Frame(self.container, bg="black")
+
+        welcome_canvas = tk.Canvas(welcome_frame, bg="black")
+        welcome_canvas.pack(expand=True, fill="both")
+
+        welcome_canvas.create_text(
+            200,
+            150,
+            text="- Press any key to start -",
+            fill="white",
+            font=("Arial", 24),
+            tag="start_text",
+        )
+
+        welcome_frame.bind("<Key>", self.handle_welcome_event)
+        welcome_canvas.bind("<Button-1>", self.handle_welcome_event)
+        welcome_frame.focus_set()
+
+        return welcome_frame
+
+    def handle_welcome_event(self, event) -> None:
+        """Handles input events from the welcome screen and delegates to the controller.
+
+        Args:
+            event (tk.Event): The keypress or mouse click event triggering the transition.
+        """
+        self._controller.handle_welcome_start()
+
+    def _create_newplayer_frame(self):
+        pass
+
+    def _create_menu_frame(self):
+        pass
+
+    def _create_gameplay_frame(self):
+        pass
+
+    def _create_game_over_frame(self):
+        pass
+
+    def show_frame(self, state_enum: GameState):
+        """Displays the requested screen based on the current GameState.
+
+        If the frame has not been created yet, it invokes the corresponding factory method,
+        grids the frame into the container, and raises it to the front.
+
+        Args:
+            state_enum (GameState): The game state to display.
+        """
+        if state_enum not in self.frames:
+            creator_func = self.views_map[state_enum]
+            frame_instance = creator_func()
+            self.frames[state_enum] = frame_instance
+            frame_instance.grid(row=0, column=0, sticky="nsew", in_=self.container)
+
+        frame = self.frames[state_enum]
+        frame.tkraise()
+        frame.focus_force()
+
     def set_controller(self, controller: "GUIController") -> None:
-        """Injects the Controller reference for handling input callbacks."""
+        """Injects the controller reference for handling input events and callbacks.
+
+        Args:
+            controller (GUIController): The controller instance to bind to this view.
+        """
         self._controller = controller
 
     def handle_click(self, row: int, col: int) -> None:
-        """Receives input from the button click and delegates it to the Controller."""
+        """Handles a board button click and delegates the move to the controller.
+
+        Args:
+            row (int): The row index of the clicked button.
+            col (int): The column index of the clicked button.
+        """
         self._controller.handle_move(row, col)
 
-    def _build_board(self) -> None:
-        """Creates and places the 9 game buttons"""
+    # --- TODO:  refactor into create_gameplay_frame ---
+    def _build_board(self, master) -> None:
+        """Creates and places the 3x3 grid of game buttons.
+
+        Args:
+            master (tk.Widget): The parent widget to contain the buttons.
+        """
         for row in range(3):
             button_row = []
             for col in range(3):
                 button = tk.Button(
-                    self.root,
+                    master,
                     text=" ",
                     width=4,
                     height=2,
-                    font=("Ariel", 24),
+                    font=("Arial", 24),
                     command=lambda r=row, c=col: self.handle_click(r, c),
                 )
                 button.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
                 button_row.append(button)
             self.board_buttons.append(button_row)
 
-    def _build_status_bar(self) -> None:
-        """Creates and places a status bar at row3 col0"""
+    # --- TODO:  refactor into create_gameplay_frame ---
+    def _build_status_bar(self, master) -> None:
+        """Creates and places a status bar below the game board.
+
+        Args:
+            master (tk.Widget): The parent widget to contain the status label.
+        """
+
         self.status_label = tk.Label(
-            self.root, text="Welcome!, Player X's turn", font=("Ariel", 12), anchor="w"
+            master, text="Welcome!, Player X's turn", font=("Arial", 12), anchor="w"
         )
         self.status_label.grid(row=3, column=0, columnspan=3, sticky="ew", pady=5)
 
@@ -77,9 +193,3 @@ class GUIView(AbstractView):
     def display_winner(self, winner_name: str) -> None:
         """End of game announcement"""
         pass
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    view = GUIView(root)
-    root.mainloop()

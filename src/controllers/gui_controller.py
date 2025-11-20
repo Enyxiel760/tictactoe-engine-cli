@@ -1,5 +1,6 @@
 from src.controllers import AbstractController
 from src import views
+from src.core import GameState
 import tkinter as tk
 
 
@@ -20,12 +21,11 @@ class GUIController(AbstractController):
         self.view.set_controller(self)
 
     def run(self) -> None:
-        """Starts the GUI event loop after successful game setup.
+        """Starts the GUI application.
 
-        If setup fails (e.g., due to invalid configuration), the loop is not started.
+        Displays the welcome screen and enters the Tkinter main event loop.
         """
-        if not self.setup_game():
-            return  # Exit if setup failed. (e.g. bad config)
+        self.view.show_frame(GameState.WELCOME_SCREEN)
         self.root.mainloop()
 
     def handle_move(self, row: int, col: int) -> None:
@@ -56,3 +56,15 @@ class GUIController(AbstractController):
                 "Invalid move. Can only place marker on empty spots."
             )
             return
+
+    def handle_welcome_start(self):
+        """Handles the welcome screen input event.
+
+        Transitions the application from the welcome screen to the player creation screen.
+        """
+        self.view.show_frame(GameState.PLAYER_CREATION)
+
+
+if __name__ == "__main__":
+    controller = GUIController()
+    controller.run()
