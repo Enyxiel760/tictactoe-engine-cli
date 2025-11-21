@@ -83,7 +83,54 @@ class GUIView(AbstractView):
         self._controller.handle_welcome_start()
 
     def _create_newplayer_frame(self):
-        pass
+        """Creates the player creation screen for entering Player 1's profile.
+
+        This frame provides:
+            - A text entry field bound to a StringVar for Player 1's name.
+            - A label describing the input field.
+            - A button to save the profile and continue, which delegates to
+              handle_player_creation_submit.
+
+        The frame is configured to expand within the root container and uses
+        grid layout with column weight for responsive resizing.
+
+        Returns:
+            tk.Frame: The frame containing the player creation UI elements.
+        """
+        creation_frame = tk.Frame(self.container, bg="blue")
+        creation_frame.grid(row=0, column=0, sticky="nsew")
+        creation_frame.grid_columnconfigure(0, weight=1)
+
+        self._p1_name_var = tk.StringVar(value="Player 1")
+        row_index = 0
+
+        tk.Label(creation_frame, text="Player Name: ").grid(
+            row=row_index, column=0, sticky="w"
+        )
+        tk.Entry(creation_frame, textvariable=self._p1_name_var).grid(
+            row=row_index, column=1, sticky="ew"
+        )
+        row_index += 1
+
+        tk.Button(
+            creation_frame,
+            text="Save Profile and Continue",
+            command=self.handle_player_creation_submit,
+        ).grid(row=row_index, column=0, columnspan=2, sticky="ew")
+
+        return creation_frame
+
+    def handle_player_creation_submit(self):
+        """Handles submission of the player creation form.
+
+        Retrieves the entered Player 1 name from the bound StringVar and
+        delegates the submission logic to the controller.
+
+        This method acts as the bridge between the GUI input field and the
+        controller's player creation workflow.
+        """
+        player_name = self._p1_name_var.get()
+        self._controller.handle_player_creation_submit(player_name)
 
     def _create_menu_frame(self):
         pass

@@ -53,3 +53,22 @@ class TestWelcomeStart(unittest.TestCase):
         self.controller.view.show_frame.assert_called_once_with(
             GameState.PLAYER_CREATION
         )
+
+
+class TestPlayerCreationController(unittest.TestCase):
+    """Tests for GUIController's player creation submission handling."""
+
+    def setUp(self):
+        self.controller = GUIController()
+        self.controller.view = MagicMock()
+        self.controller._profile_data = {}
+
+    def test_handle_player_creation_submit_stores_name_and_shows_menu(self):
+        """Verifies that the controller stores the player name and transitions to the main menu."""
+        self.controller.handle_player_creation_submit("Alice")
+
+        # Profile data should contain the submitted name
+        self.assertEqual(self.controller._profile_data["p1_name"], "Alice")
+
+        # View should transition to the main menu
+        self.controller.view.show_frame.assert_called_once_with(GameState.MAIN_MENU)

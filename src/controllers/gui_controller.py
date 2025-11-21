@@ -19,6 +19,8 @@ class GUIController(AbstractController):
         self.root = tk.Tk()
         self.view = views.GUIView(self.root)
         self.view.set_controller(self)
+        # Stores the current player profile data in a structured way (for future expansion)
+        self._profile_data = {}
 
     def run(self) -> None:
         """Starts the GUI application.
@@ -57,12 +59,24 @@ class GUIController(AbstractController):
             )
             return
 
-    def handle_welcome_start(self):
+    def handle_welcome_start(self) -> None:
         """Handles the welcome screen input event.
 
         Transitions the application from the welcome screen to the player creation screen.
         """
         self.view.show_frame(GameState.PLAYER_CREATION)
+
+    def handle_player_creation_submit(self, player_name: str) -> None:
+        """Processes the submitted player profile and transitions to the main menu.
+
+        Stores the provided Player 1 name in the profile data dictionary and
+        instructs the view to display the main menu screen.
+
+        Args:
+            player_name (str): The name entered for Player 1.
+        """
+        self._profile_data["p1_name"] = player_name
+        self.view.show_frame(GameState.MAIN_MENU)
 
 
 if __name__ == "__main__":
