@@ -22,7 +22,7 @@ class TestHandleClick(unittest.TestCase):
 class TestShowFrames(unittest.TestCase):
     """Unit tests for GUIView.show_frame behavior.
 
-    Verifies that frame creation methods are invoked only once per state,
+    Ensures that frame creation methods are invoked only once per state,
     and that subsequent calls reuse the cached frame instance.
     """
 
@@ -35,25 +35,25 @@ class TestShowFrames(unittest.TestCase):
         """Tests that show_frame creates a frame once and reuses it thereafter.
 
         Steps:
-            1. Clear the frames cache and rebuild views_map to point to the patched method.
+            1. Clear the frames cache.
             2. Call show_frame for WELCOME_SCREEN and assert the creator was invoked.
             3. Call show_frame again and verify the cached frame is reused.
+            4. Verify the cached frame instance remains the same across calls.
         """
         self.view.frames = {}
-        self.view._setup_view_manager()
 
-        # First call should invoke the creator
-        self.view.show_frame(GameState.WELCOME_SCREEN)
+        # Step 1 & 2: First call should invoke the creator
+        self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
         mock_func.assert_called_once()
 
-        # Second call should reuse cached frame
-        self.view.show_frame(GameState.WELCOME_SCREEN)
-        self.assertIn(GameState.WELCOME_SCREEN, self.view.frames)
+        # Step 3: Second call should reuse cached frame
+        self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
+        self.assertIn(GameState.Frame.WELCOME_SCREEN, self.view.frames)
 
         # Verify the cached frame is the same instance
-        frame1 = self.view.frames[GameState.WELCOME_SCREEN]
-        self.view.show_frame(GameState.WELCOME_SCREEN)
-        frame2 = self.view.frames[GameState.WELCOME_SCREEN]
+        frame1 = self.view.frames[GameState.Frame.WELCOME_SCREEN]
+        self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
+        frame2 = self.view.frames[GameState.Frame.WELCOME_SCREEN]
         self.assertIs(frame1, frame2)
 
 

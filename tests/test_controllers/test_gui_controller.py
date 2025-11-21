@@ -51,7 +51,7 @@ class TestWelcomeStart(unittest.TestCase):
         self.controller.view.show_frame = MagicMock()
         self.controller.handle_welcome_start()
         self.controller.view.show_frame.assert_called_once_with(
-            GameState.PLAYER_CREATION
+            GameState.Frame.PLAYER_CREATION
         )
 
 
@@ -71,4 +71,6 @@ class TestPlayerCreationController(unittest.TestCase):
         self.assertEqual(self.controller._profile_data["p1_name"], "Alice")
 
         # View should transition to the main menu
-        self.controller.view.show_frame.assert_called_once_with(GameState.MAIN_MENU)
+        self.controller.view.show_frame.assert_called_once_with(
+            GameState.Frame.MAIN_MENU
+        )

@@ -28,25 +28,12 @@ class GUIView(AbstractView):
         self._controller: "GUIController"
 
         self.container = tk.Frame(self.root)
-        self.views_map = {}  # Holds map of State -> Creator method
         self.frames = {}  # Holds map of State -> Frame instance
         self.container.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
-
-        self._setup_view_manager()
-
-    def _setup_view_manager(self) -> None:
-        """Populates the mapping of GameState enums to their corresponding frame creation methods."""
-        self.views_map = {
-            GameState.WELCOME_SCREEN: self._create_welcome_frame,
-            GameState.PLAYER_CREATION: self._create_newplayer_frame,
-            GameState.MAIN_MENU: self._create_menu_frame,
-            GameState.GAMEPLAY: self._create_gameplay_frame,
-            GameState.GAME_OVER: self._create_game_over_frame,
-        }
 
     def _create_welcome_frame(self) -> tk.Frame:
         """Creates the welcome screen with a canvas prompt and binds input events.
@@ -133,7 +120,26 @@ class GUIView(AbstractView):
         self._controller.handle_player_creation_submit(player_name)
 
     def _create_menu_frame(self):
-        pass
+        menu_frame = tk.Frame(self.container, bg="red")
+        menu_frame.grid(row=0, column=0, sticky="nsew")
+        menu_frame.grid_columnconfigure(0, weight=1)
+
+        tk.Label(menu_frame, text="Select Game Mode", font=("Arial", 16)).pack(pady=5)
+        tk.Button(
+            menu_frame,
+            text="1 Player (vs AI)",
+            width=20,
+            command=self._controller.handle_1p_select,
+        ).pack(pady=5)
+        tk.Button(
+            menu_frame,
+            text="2 Player (Human)",
+            width=20,
+            command=self._controller.handle_2p_select,
+        ).pack(pady=5)
+
+        menu_frame.focus_set()
+        return menu_frame
 
     def _create_gameplay_frame(self):
         pass
@@ -141,7 +147,7 @@ class GUIView(AbstractView):
     def _create_game_over_frame(self):
         pass
 
-    def show_frame(self, state_enum: GameState):
+    def show_frame(self, state: GameState.Frame):
         """Displays the requested screen based on the current GameState.
 
         If the frame has not been created yet, it invokes the corresponding factory method,
@@ -150,13 +156,12 @@ class GUIView(AbstractView):
         Args:
             state_enum (GameState): The game state to display.
         """
-        if state_enum not in self.frames:
-            creator_func = self.views_map[state_enum]
-            frame_instance = creator_func()
-            self.frames[state_enum] = frame_instance
+        if state not in self.frames:
+            frame_instance = getattr(self, state.creation_func)()
+            self.frames[state] = frame_instance
             frame_instance.grid(row=0, column=0, sticky="nsew", in_=self.container)
 
-        frame = self.frames[state_enum]
+        frame = self.frames[state]
         frame.tkraise()
         frame.focus_force()
 

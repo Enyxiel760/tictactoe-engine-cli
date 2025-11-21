@@ -27,7 +27,7 @@ class GUIController(AbstractController):
 
         Displays the welcome screen and enters the Tkinter main event loop.
         """
-        self.view.show_frame(GameState.WELCOME_SCREEN)
+        self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
         self.root.mainloop()
 
     def handle_move(self, row: int, col: int) -> None:
@@ -64,7 +64,7 @@ class GUIController(AbstractController):
 
         Transitions the application from the welcome screen to the player creation screen.
         """
-        self.view.show_frame(GameState.PLAYER_CREATION)
+        self.view.show_frame(GameState.Frame.PLAYER_CREATION)
 
     def handle_player_creation_submit(self, player_name: str) -> None:
         """Processes the submitted player profile and transitions to the main menu.
@@ -76,7 +76,13 @@ class GUIController(AbstractController):
             player_name (str): The name entered for Player 1.
         """
         self._profile_data["p1_name"] = player_name
-        self.view.show_frame(GameState.MAIN_MENU)
+        self.view.show_frame(GameState.Frame.MAIN_MENU)
+
+    def handle_1p_select(self):
+        pass
+
+    def handle_2p_select(self):
+        pass
 
 
 if __name__ == "__main__":
