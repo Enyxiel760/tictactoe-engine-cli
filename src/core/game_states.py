@@ -29,14 +29,14 @@ class GameState:
         def creation_func(self) -> str:
             return self.value.creation_func
 
-    class Modal(Enum):
+    class Overlay(Enum):
         """Defines modal dialog states and their view creation methods."""
 
-        AI_SELECTION = GameStateMeta("AI_Selection", "._create_ai_select_modal")
+        AI_SELECTION = GameStateMeta("AI_Selection", "_create_ai_select_overlay")
         TWO_PLAYER_SETUP = GameStateMeta(
-            "Two_Player_Setup", "._create_two_player_setup_modal"
+            "Two_Player_Setup", "_create_two_player_setup_overlay"
         )
-        SETTINGS = GameStateMeta("Settings", "._create_settings_modal")
+        SETTINGS = GameStateMeta("Settings", "_create_settings_overlay")
 
         @property
         def label(self) -> str:

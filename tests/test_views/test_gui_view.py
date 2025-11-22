@@ -55,21 +55,3 @@ class TestShowFrames(unittest.TestCase):
         self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
         frame2 = self.view.frames[GameState.Frame.WELCOME_SCREEN]
         self.assertIs(frame1, frame2)
-
-
-class TestPlayerCreationView(unittest.TestCase):
-    """Tests for GUIView's player creation submission handling."""
-
-    def setUp(self):
-        self.mock_controller = MagicMock()
-        self.view = GUIView(MagicMock())
-        self.view.set_controller(self.mock_controller)
-        self.view._p1_name_var = MagicMock()
-        self.view._p1_name_var.get.return_value = "Alice"
-
-    def test_handle_player_creation_submit_delegates_to_controller(self):
-        """Verifies that the view passes the entered name to the controller."""
-        self.view.handle_player_creation_submit()
-        self.mock_controller.handle_player_creation_submit.assert_called_once_with(
-            "Alice"
-        )

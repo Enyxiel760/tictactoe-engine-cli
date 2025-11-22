@@ -2,6 +2,7 @@ from src.controllers import AbstractController
 from src import views
 from src.core import GameState
 import tkinter as tk
+import random
 
 
 class GUIController(AbstractController):
@@ -21,6 +22,7 @@ class GUIController(AbstractController):
         self.view.set_controller(self)
         # Stores the current player profile data in a structured way (for future expansion)
         self._profile_data = {}
+        self._current_game_config = {}
 
     def run(self) -> None:
         """Starts the GUI application.
@@ -79,7 +81,25 @@ class GUIController(AbstractController):
         self.view.show_frame(GameState.Frame.MAIN_MENU)
 
     def handle_1p_select(self):
-        pass
+        self.view._show_overlay(GameState.Overlay.AI_SELECTION)
+
+    def handle_ai_config_submission(self, difficulty_key: str) -> None:
+        """Stores the necessary config, randomizes markers, and launches the game."""
+
+        if random.choice([True, False]):
+            p1_marker = "X"
+        else:
+            p1_marker = "O"
+
+        # 2. Store the configuration state for the final factory assembly
+        self._current_game_config = {}
+        self._current_game_config["p1_name"] = self._profile_data["p1_name"]
+        self._current_game_config["p1_marker"] = p1_marker
+        self._current_game_config["p2_type"] = difficulty_key
+        self._current_game_config["p2_name"] = "Bot"
+
+        # 3. Launch the Game
+        self._launch_game()
 
     def handle_2p_select(self):
         pass

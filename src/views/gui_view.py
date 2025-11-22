@@ -1,10 +1,12 @@
 from src.views import AbstractView
-from src.core import GameState
+from src.core import GameState, PlayerType
 import tkinter as tk
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.controllers import GUIController
+
+ORIGIN = {"row": 0, "column": 0}
 
 
 class GUIView(AbstractView):
@@ -29,7 +31,7 @@ class GUIView(AbstractView):
 
         self.container = tk.Frame(self.root)
         self.frames = {}  # Holds map of State -> Frame instance
-        self.container.grid(row=0, column=0, sticky="nsew")
+        self.container.grid(**ORIGIN, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
@@ -57,7 +59,6 @@ class GUIView(AbstractView):
 
         welcome_frame.bind("<Key>", self.handle_welcome_event)
         welcome_canvas.bind("<Button-1>", self.handle_welcome_event)
-        welcome_frame.focus_set()
 
         return welcome_frame
 
@@ -85,44 +86,20 @@ class GUIView(AbstractView):
             tk.Frame: The frame containing the player creation UI elements.
         """
         creation_frame = tk.Frame(self.container, bg="blue")
-        creation_frame.grid(row=0, column=0, sticky="nsew")
-        creation_frame.grid_columnconfigure(0, weight=1)
+        name = tk.StringVar(value="Player 1")
 
-        self._p1_name_var = tk.StringVar(value="Player 1")
-        row_index = 0
-
-        tk.Label(creation_frame, text="Player Name: ").grid(
-            row=row_index, column=0, sticky="w"
-        )
-        tk.Entry(creation_frame, textvariable=self._p1_name_var).grid(
-            row=row_index, column=1, sticky="ew"
-        )
-        row_index += 1
-
+        tk.Label(creation_frame, text="Player Name: ").grid(**ORIGIN, sticky="w")
+        tk.Entry(creation_frame, textvariable=name).grid(row=0, column=1, sticky="ew")
         tk.Button(
             creation_frame,
             text="Save Profile and Continue",
-            command=self.handle_player_creation_submit,
-        ).grid(row=row_index, column=0, columnspan=2, sticky="ew")
+            command=lambda: self._controller.handle_player_creation_submit(name.get()),
+        ).grid(row=1, column=0, columnspan=2, sticky="ew")
 
         return creation_frame
 
-    def handle_player_creation_submit(self):
-        """Handles submission of the player creation form.
-
-        Retrieves the entered Player 1 name from the bound StringVar and
-        delegates the submission logic to the controller.
-
-        This method acts as the bridge between the GUI input field and the
-        controller's player creation workflow.
-        """
-        player_name = self._p1_name_var.get()
-        self._controller.handle_player_creation_submit(player_name)
-
     def _create_menu_frame(self):
         menu_frame = tk.Frame(self.container, bg="red")
-        menu_frame.grid(row=0, column=0, sticky="nsew")
-        menu_frame.grid_columnconfigure(0, weight=1)
 
         tk.Label(menu_frame, text="Select Game Mode", font=("Arial", 16)).pack(pady=5)
         tk.Button(
@@ -138,8 +115,26 @@ class GUIView(AbstractView):
             command=self._controller.handle_2p_select,
         ).pack(pady=5)
 
-        menu_frame.focus_set()
         return menu_frame
+
+    def _create_ai_select_overlay(self):
+        overlay_frame = tk.Frame(self.container, padx=20, pady=20, bg="#202020")
+
+        tk.Label(
+            overlay_frame,
+            text="Choose Opponent Difficulty:",
+            font=("Arial", 12),
+            fg="white",
+            bg="#202020",
+        ).pack(pady=10)
+
+        for key, description in PlayerType.get_ai_options():
+            tk.Button(
+                overlay_frame,
+                text=description,
+                command=lambda k=key: self._controller.handle_ai_config_submission(k),
+            ).pack(pady=5, padx=20)
+        return overlay_frame
 
     def _create_gameplay_frame(self):
         pass
@@ -147,8 +142,8 @@ class GUIView(AbstractView):
     def _create_game_over_frame(self):
         pass
 
-    def show_frame(self, state: GameState.Frame):
-        """Displays the requested screen based on the current GameState.
+    def show_frame(self, state: GameState.Frame) -> None:
+        """Displays the requested screen based on the current GameState.Frame
 
         If the frame has not been created yet, it invokes the corresponding factory method,
         grids the frame into the container, and raises it to the front.
@@ -159,11 +154,20 @@ class GUIView(AbstractView):
         if state not in self.frames:
             frame_instance = getattr(self, state.creation_func)()
             self.frames[state] = frame_instance
-            frame_instance.grid(row=0, column=0, sticky="nsew", in_=self.container)
+            frame_instance.grid(**ORIGIN, sticky="nsew", in_=self.container)
 
         frame = self.frames[state]
         frame.tkraise()
         frame.focus_force()
+
+    def _show_overlay(self, overlay: GameState.Overlay) -> None:
+
+        creator_func = getattr(self, overlay.creation_func)
+        overlay_frame = creator_func()
+
+        overlay_frame.grid(**ORIGIN, sticky="nsew", in_=self.container)
+        overlay_frame.tkraise()
+        overlay_frame.focus_set()
 
     def set_controller(self, controller: "GUIController") -> None:
         """Injects the controller reference for handling input events and callbacks.
@@ -225,7 +229,7 @@ class GUIView(AbstractView):
                 - "p1_marker": Marker chosen by Player 1 ("X" or "O").
                 - "p2_type": Difficulty key for Player 2 ("0" for human, otherwise AI key).
                 - "p2_name": Name of Player 2 ("Bot" if AI, otherwise user-provided)."""
-        pass
+        return self._controller._current_game_config
 
     def display_game_state(self) -> None:
         """Abstract method to display the current state of the board.
