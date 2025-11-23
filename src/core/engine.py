@@ -1,12 +1,22 @@
+"""Game engine for Tic Tac Toe.
+
+Defines the GameEngine class, which manages the board state, enforces rules, and coordinates player
+turns and win conditions.
+"""
+
 from textwrap import dedent
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.players import AbstractPlayer
 
 
 class GameEngine:
-    """Manages the state and rules of the game."""
+    """Manages the state and rules of Tic Tac Toe.
+
+    Provides methods to manipulate the board, validate moves, switch players, and determine game
+    outcomes.
+    """
 
     WINNING_LINE_POSITIONS = [
         [(0, 0), (0, 1), (0, 2)],  # row 1
@@ -20,6 +30,15 @@ class GameEngine:
     ]
 
     def __init__(self, player_x: "AbstractPlayer", player_o: "AbstractPlayer"):
+        """Initialize the game engine with two players.
+
+        Creates a new empty board, assigns Player X and Player O, and sets the current player to
+        Player X.
+
+        Args:
+            player_x: The player assigned the "X" marker.
+            player_o: The player assigned the "O" marker.
+        """
         self.board = self._new_board()
         self.player_x = player_x
         self.player_o = player_o
@@ -27,37 +46,58 @@ class GameEngine:
 
     # --- Helpers ---
 
-    def get_board_state(self) -> List[List[Optional[str]]]:
-        """Provides the current, read-only board state.
-        Used by the AI player to request the board when calculating a move."""
+    def get_board_state(self) -> list[list[str | None]]:
+        """Return the current board state.
+
+        Used by AI players to request the board when calculating a move.
+
+        Returns:
+            list[list[str | None]]: A 3x3 list of lists representing the board.
+        """
         return self.board
 
+    def get_board_copy(self, board_state: list[list[str | None]] | None) -> list[list[str | None]]:
+        """Return a copy of the given or current board state.
+
+        Args:
+            board_state: A board to copy. If None, the internal board is copied.
+
+        Returns:
+            list[list[str | None]]: A deep copy of the board.
+        """
+        target = board_state if board_state is not None else self.board
+        return [row.copy() for row in target]
+
     def switch_player(self) -> None:
-        """Switches the current player to the other player"""
+        """Switches the current player to the other player."""
         if self.current_player == self.player_x:
             self.current_player = self.player_o
         else:
             self.current_player = self.player_x
 
     def get_current_player(self) -> "AbstractPlayer":
-        """Getter method to return self.current_player"""
+        """Return the current player.
+
+        Returns:
+            AbstractPlayer: The player instance whose turn it is.
+        """
         return self.current_player
 
     # --- Core Game Logic ---
 
-    def _new_board(self) -> List[List[Optional[str]]]:
-        """Creates a new, empty 3x3 Tic-Tac-Tow board.
+    def _new_board(self) -> list[list[str | None]]:
+        """Create a new empty 3x3 Tic Tac Toe board.
 
         Returns:
-            List[List[Optional[str]]]: A 3x3 list of lists where all cells are initialized to
-            None."""
+            list[list[str | None]]: A 3x3 list of lists initialized with None.
+        """
         return [[None, None, None], [None, None, None], [None, None, None]]
 
     def show_board_positions(self) -> None:
-        """Displays a numerical guide for the Tic-Tac-Toe board positions(1-9).
+        """Display a numerical guide for board positions (1-9).
 
-        This static guide helps the user understand how their number input maps to the game
-        board."""
+        Helps the user understand how numeric input maps to board coordinates.
+        """
         board_positions = dedent(
             """\
         -------------
@@ -71,34 +111,28 @@ class GameEngine:
         )
         print(board_positions)
 
-    def make_move(self, move: Tuple[int, int]) -> None:
-        """Places the current player's symbol in the given position on the internal board.
-
-        This method mutates the game's internal board state directly.
+    def make_move(self, move: tuple[int, int]) -> None:
+        """Place the current player's marker at the given position.
 
         Args:
-            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the
-            move."""
+            move: The 0-indexed (row, col) coordinates for the move.
+        """
         symbol = self.current_player.marker
         row, col = move
         self.board[row][col] = symbol
 
-    def get_winner(
-        self, board_state: Optional[List[List[Optional[str]]]] = None
-    ) -> Optional[str]:
-        """Determines if the current or provided board state contains a winning line.
+    def get_winner(self, board_state: list[list[str | None]] | None = None) -> str | None:
+        """Determine if the board contains a winning line.
 
-        This method checks all predefined winning line combinations (rows, columns, diagonals)
-        to see if any contain three identical, non-None symbols. If a winning line is found,
-        the corresponding player's symbol is returned.
+        Checks all predefined winning line combinations (rows, columns, diagonals). If a winning
+        line is found, returns the corresponding marker.
 
         Args:
-            board_state (Optional[List[List[Optional[str]]]]): A 2D list representing the game board.
-                If None, the method uses the internal board state (`self.board`).
+            board_state: A board to evaluate. If None,the internal board is used.
 
         Returns:
-            Optional[str]: The symbol of the winning player ('X' or 'O') if a winning line is found;
-                otherwise, returns None."""
+            str | None: The winning marker ("X" or "O") if found, else None.
+        """
         if board_state is None:
             board_state = self.board
 
@@ -111,16 +145,15 @@ class GameEngine:
                 return val1
         return None
 
-    def is_board_full(
-        self, board_state: Optional[List[List[Optional[str]]]] = None
-    ) -> bool:
-        """Checks the game board to see if all positions are occupied.
+    def is_board_full(self, board_state: list[list[str | None]] | None = None) -> bool:
+        """Check if the board is full.
 
-        It efficiently returns False as soon as it finds an empty space (None).
+        Args:
+            board_state: A board to evaluate. If None, the internal board is used.
 
         Returns:
-            bool: True if the board is full,
-                False if at least one empty spot remains."""
+            bool: True if all cells are occupied, False otherwise.
+        """
         if board_state is None:
             board_state = self.board
 
@@ -129,51 +162,45 @@ class GameEngine:
                 return False
         return True
 
-    def is_valid_move(self, move: Tuple[int, int]) -> bool:
-        """Checks if a requested move position is currently empty (valid).
+    def is_valid_move(self, move: tuple[int, int]) -> bool:
+        """Check if a move is valid.
 
-        This function assumes the 'move' coordinate (row, col) are already within the legal
-        board range(0-2), as validate by the Player Object.
-
-        A move is valid if the cell at the given coordinates holds the value 'None'.
+        A move is valid if the target cell is empty (None). Assumes the coordinates are within the
+        legal range (0-2).
 
         Args:
-            move (Tuple[int, int]): The 0-indexed (row, col) coordinates for the move.
+            move: The 0-indexed (row, col) coordinates.
 
         Returns:
-            bool: True if the cell is empty (valid to place a symbol),
-                False otherwise."""
+            bool: True if the cell is empty, False otherwise.
+        """
         row, col = move
         return self.board[row][col] is None
 
-    def check_game_status(self) -> Tuple[bool, Optional[str]]:
-        """Evaluates the current game state and determines if the game is over.
+    def check_game_status(self) -> tuple[bool, str | None]:
+        """Evaluate the current game state.
 
-        This method checks for a winning condition or a full board to determine
-        whether the game has concluded. It returns a tuple indicating the game-over
-        status and the winning marker, if any.
+        Determines if the game is over due to a win or a full board.
 
         Returns:
-            Tuple[bool, Optional[str]]:
-                - bool: True if the game is over (win or draw), False otherwise.
-                - Optional[str]: The winning marker ("X" or "O") if there is a winner,
-                  else None."""
+            tuple[bool, str | None]:
+                - bool: True if the game is over, False otherwise.
+                - str | None: The winning marker ("X" or "O") if there is a winner, else None.
+        """
         winner_marker = self.get_winner()
         is_full = self.is_board_full()
         is_over = (winner_marker is not None) or is_full
         return is_over, winner_marker
 
-    def get_winner_name(self, winner_marker: str) -> Optional[str]:
-        """Resolves the name of the winning player based on their marker.
-
-        Given a marker ("X" or "O"), this method returns the corresponding player's name.
-        If no winner exists (i.e., marker is None), it returns None.
+    def get_winner_name(self, winner_marker: str | None) -> str | None:
+        """Retrieve the name of the winning player based on the marker.
 
         Args:
-            winner_marker (str): The marker of the winning player ("X" or "O").
+            winner_marker: The marker of the winning player ("X" or "O").
 
         Returns:
-            Optional[str]: The name of the winning player, or None if no winner."""
+            str | None: The name of the winning player, or None if no winner.
+        """
         if winner_marker is None:
             return None
         elif winner_marker == self.player_x.marker:

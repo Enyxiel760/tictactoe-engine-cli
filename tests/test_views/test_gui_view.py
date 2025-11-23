@@ -1,7 +1,14 @@
+"""Unit tests for the GUIView class.
+
+This module validates the behavior of the graphical user interface view, focusing on event
+delegation to the controller and the efficient management (caching) of UI frames.
+"""
+
 import unittest
 from unittest.mock import MagicMock, patch
-from src.views import GUIView
+
 from src.core import GameState
+from src.views import GUIView
 
 
 class TestHandleClick(unittest.TestCase):
@@ -22,8 +29,8 @@ class TestHandleClick(unittest.TestCase):
 class TestShowFrames(unittest.TestCase):
     """Unit tests for GUIView.show_frame behavior.
 
-    Ensures that frame creation methods are invoked only once per state,
-    and that subsequent calls reuse the cached frame instance.
+    Ensures that frame creation methods are invoked only once per state, and that subsequent calls
+    reuse the cached frame instance.
     """
 
     def setUp(self):

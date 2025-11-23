@@ -1,7 +1,14 @@
+"""Unit tests for the GUIController.
+
+This module verifies the functionality of the GUIController, including move handling, screen
+transitions, player creation, and AI configuration.
+"""
+
+import unittest
+from unittest.mock import MagicMock, patch
+
 from src.controllers import GUIController
 from src.core import GameState
-from unittest.mock import MagicMock, patch
-import unittest
 
 
 class TestHandleMove(unittest.TestCase):
@@ -17,6 +24,7 @@ class TestHandleMove(unittest.TestCase):
         """Should display error and skip game state update on invalid move."""
         self.controller.engine.is_valid_move.return_value = False
         self.controller.handle_move(1, 1)
+
         self.controller.view.display_error.assert_called_once_with(
             "Invalid move. Can only place marker on empty spots."
         )
@@ -28,7 +36,9 @@ class TestHandleMove(unittest.TestCase):
         """Should update game state and switch player on valid move."""
         self.controller.engine.is_valid_move.return_value = True
         self.controller.engine.check_game_status.return_value = (False, "X")
+
         self.controller.handle_move(1, 1)
+
         self.controller.engine.make_move.assert_called_once_with((1, 1))
         self.controller.view.display_game_state.assert_called_once()
         self.controller.engine.switch_player.assert_called_once()
@@ -37,8 +47,8 @@ class TestHandleMove(unittest.TestCase):
 class TestWelcomeStart(unittest.TestCase):
     """Unit tests for GUIController.handle_welcome_start.
 
-    Verifies that the controller correctly transitions from the welcome
-    screen to the player creation screen by delegating to the view.
+    Verifies that the controller correctly transitions from the welcome screen to the player
+    creation screen by delegating to the view.
     """
 
     def setUp(self):
@@ -50,15 +60,14 @@ class TestWelcomeStart(unittest.TestCase):
         """Verifies that handle_welcome_start shows the player creation screen."""
         self.controller.view.show_frame = MagicMock()
         self.controller.handle_welcome_start()
-        self.controller.view.show_frame.assert_called_once_with(
-            GameState.Frame.PLAYER_CREATION
-        )
+        self.controller.view.show_frame.assert_called_once_with(GameState.Frame.PLAYER_CREATION)
 
 
 class TestPlayerCreationController(unittest.TestCase):
     """Tests for GUIController's player creation submission handling."""
 
     def setUp(self):
+        """Initializes a GUIController with a mocked view."""
         self.controller = GUIController()
         self.controller.view = MagicMock()
         self.controller._profile_data = {}
@@ -71,16 +80,14 @@ class TestPlayerCreationController(unittest.TestCase):
         self.assertEqual(self.controller._profile_data["p1_name"], "Alice")
 
         # View should transition to the main menu
-        self.controller.view.show_frame.assert_called_once_with(
-            GameState.Frame.MAIN_MENU
-        )
+        self.controller.view.show_frame.assert_called_once_with(GameState.Frame.MAIN_MENU)
 
 
 class TestOnePlayerSelect(unittest.TestCase):
     """Unit tests for GUIController.handle_1p_select.
 
-    Verifies that selecting the one-player option correctly triggers
-    the AI selection overlay by delegating to the view.
+    Verifies that selecting the one-player option correctly triggers the AI selection overlay by
+    delegating to the view.
     """
 
     def setUp(self):
@@ -89,27 +96,21 @@ class TestOnePlayerSelect(unittest.TestCase):
         self.controller.view = MagicMock()
 
     def test_handle_1p_select_shows_ai_overlay(self):
-        """Ensures that handle_1p_select calls the view's _show_overlay
-        with the AI_SELECTION overlay state.
-        """
+        """Ensures handle_1p_select calls the view's _show_overlay with the AI_SELECTION state."""
         self.controller.view._show_overlay = MagicMock()
         self.controller.handle_1p_select()
-        self.controller.view._show_overlay.assert_called_once_with(
-            GameState.Overlay.AI_SELECTION
-        )
+        self.controller.view._show_overlay.assert_called_once_with(GameState.Overlay.AI_SELECTION)
 
 
 class TestAIConfigSubmission(unittest.TestCase):
     """Unit tests for GUIController.handle_ai_config_submission.
 
-    Verifies that AI configuration submission stores the correct setup
-    data in the controller and triggers game launch.
+    Verifies that AI configuration submission stores the correct setup data in the controller and
+    triggers game launch.
     """
 
     def setUp(self):
-        """Initializes a GUIController with mocked view and launch method,
-        and pre-populates profile data for Player 1.
-        """
+        """Initializes a GUIController with mocked view and launch method."""
         self.controller = GUIController()
         self.controller.view = MagicMock()
         self.controller._profile_data = {"p1_name": "Alice"}
@@ -117,9 +118,10 @@ class TestAIConfigSubmission(unittest.TestCase):
 
     @patch("src.controllers.gui_controller.random.choice", return_value=True)
     def test_ai_config_submission_sets_config_and_launches(self, _):
-        """Ensures that handle_ai_config_submission populates the game
-        configuration dictionary with Player 1's name, randomized marker,
-        Player 2's type and name, and then calls _launch_game.
+        """Ensures that handle_ai_config_submission populates the game configuration.
+
+        Verifies that it sets Player 1's name, randomized marker, Player 2's type and name,and then
+        calls _launch_game.
         """
         self.controller.handle_ai_config_submission("2")  # difficulty key
         config = self.controller._current_game_config

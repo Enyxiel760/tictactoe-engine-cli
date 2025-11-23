@@ -1,26 +1,38 @@
+"""Unit tests for the AbstractPlayer base class.
+
+This module verifies the contract enforcement of the AbstractPlayer class, ensuring that
+subclasses must implement required methods and that initialization logic functions correctly.
+"""
+
 import unittest
+
 from src.players import AbstractPlayer
 
 
 class IncompletePlayer(AbstractPlayer):
-    """Fails to implement get_move to test abstract enforcement"""
+    """Fails to implement get_move to test abstract enforcement."""
+
+    pass
 
 
 class CompletePlayer(AbstractPlayer):
-    """Minimally complete subclass to verify."""
+    """Minimally complete subclass to verify instantiation."""
 
     def get_move(self):
+        """Stub implementation of the abstract method."""
         return (0, 0)
 
 
 class TestAbstractPlayerContract(unittest.TestCase):
+    """Unit tests for the AbstractPlayer interface contract."""
 
     def test_abstract_player_enforce_get_move(self):
         """Tests that attempting to instantiate an incomplete subclass raises TypeError.
 
         Note:
-        Whilst this is generally redundant (testing the language, not the logic).
-        This test is retained here as an academic exercise."""
+            While testing language features is generally redundant, this test confirms that
+            the abstract inheritance structure is correctly defined.
+        """
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
             IncompletePlayer(name="Fail", marker="F")
 

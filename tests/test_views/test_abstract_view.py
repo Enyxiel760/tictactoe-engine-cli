@@ -1,5 +1,12 @@
+"""Unit tests for the AbstractView base class.
+
+This module verifies the contract enforcement of the AbstractView class, ensuring that
+subclasses must implement required methods and that the dependency injection mechanism works.
+"""
+
 import unittest
-from src.views.abstract_view import AbstractView
+
+from src.views import AbstractView
 
 
 class MockEngine:
@@ -15,45 +22,50 @@ class MockIncompleteView(AbstractView):
 
 
 class MockCompleteView(AbstractView):
-    """Minimal concrete implementation to test instantiation"""
+    """Minimal concrete implementation to test instantiation."""
 
     def get_game_config(self):
+        """Stub implementation."""
         pass
 
     def display_game_state(self):
+        """Stub implementation."""
         pass
 
     def display_message(self, message: str):
+        """Stub implementation."""
         pass
 
     def display_error(self, message: str):
+        """Stub implementation."""
         pass
 
     def display_winner(self, winner_name: str):
+        """Stub implementation."""
         pass
 
 
 class TestAbstractView(unittest.TestCase):
+    """Unit tests for the AbstractView interface contract."""
 
     def setUp(self):
+        """Initialize test fixtures."""
         self.mock_engine = MockEngine()
 
     def test_abstract_methods_are_enforced(self):
         """Tests that attempting to instantiate an incomplete subclass raises TypeError.
 
         Note:
-        Whilst this is generally redundant (testing the language, not the logic).
-        This test is retained here as an academic exercise."""
-
+            While testing language features is generally redundant, this test confirms that
+            the abstract inheritance structure is correctly defined.
+        """
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
             MockIncompleteView()
 
     def test_set_engine_is_inherited_and_works(self):
-        """Tests that the concrete class correctly inherits and executes the set_engine
-        method provided by the AbstractView"""
+        """Tests that the concrete class correctly inherits and executes set_engine."""
         view = MockCompleteView()
-        try:
-            view.set_engine(self.mock_engine)
-        except Exception as e:
-            self.fail(f"set_engine raised an unexpected exception: {e}")
+
+        view.set_engine(self.mock_engine)
+
         self.assertIs(view._game, self.mock_engine)

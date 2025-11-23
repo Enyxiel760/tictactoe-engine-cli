@@ -1,11 +1,20 @@
+"""Unit tests for the PlayerType enumeration.
+
+This module validates the functionality of the PlayerType enum, including key retrieval,
+AI option filtering, and class mapping logic.
+"""
+
 import unittest
+
 from src.core import PlayerType
 from src.players import AbstractAIPlayer
 
 
 class TestPlayerTypeEnum(unittest.TestCase):
+    """Test suite for the PlayerType enumeration logic."""
 
     def setUp(self):
+        """Initialize common test data."""
         # Get all keys as integers for comprehensive checking
         self.all_int_keys = PlayerType.get_keys()
         self.ai_options = list(PlayerType.get_ai_options())
@@ -23,16 +32,17 @@ class TestPlayerTypeEnum(unittest.TestCase):
 
     def test_ai_options_exclude_human(self):
         """Ensures AI options exclude the HUMAN player and match expected count."""
-        # Note: Breaks if a key is added but proves filtering works
         self.assertEqual(len(self.ai_options), len(self.all_int_keys) - 1)
 
     def test_all_ai_options_map_to_ai_classes(self):
         """Ensures every AI option key maps to a valid subclass of AbstractAIPlayer.
 
         This test guards against enum misconfiguration by verifying that all keys yielded
-        by `get_ai_options()` resolve to classes that inherit from AbstractAIPlayer."""
+        by `get_ai_options()` resolve to classes that inherit from AbstractAIPlayer.
+        """
         for key, _ in self.ai_options:
             cls = PlayerType.get_player_class_by_key(key)
+            self.assertIsNotNone(cls, f"Class not found for key: {key}")
             self.assertTrue(issubclass(cls, AbstractAIPlayer))
 
     def test_min_difficulty_matches_lowest_ai_key(self):
@@ -47,6 +57,8 @@ class TestPlayerTypeEnum(unittest.TestCase):
         """Validates that get_player_class_by_key returns the correct AI player class."""
         max_ai_key_str = str(PlayerType.get_max_difficulty_key())
         player_class = PlayerType.get_player_class_by_key(max_ai_key_str)
+
+        self.assertIsNotNone(player_class)
         self.assertTrue(issubclass(player_class, AbstractAIPlayer))
 
         # Note: This assert should be updated if the top key changes.

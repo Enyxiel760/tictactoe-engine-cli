@@ -1,13 +1,23 @@
+"""Unit tests for the GameEngine.
+
+This module verifies the core logic of the Tic Tac Toe game engine, including board initialization,
+move execution, win detection, and state management.
+"""
+
 import unittest
+
 from src.core.engine import GameEngine
 from src.players.abstract_player import AbstractPlayer
 
 
 class DummyPlayer(AbstractPlayer):
     """A concrete player class used only for testing the GameEngine.
-    It complies with the full AbstractPlayer contract."""
 
-    def get_move(self):
+    It complies with the full AbstractPlayer contract.
+    """
+
+    def get_move(self) -> tuple[int, int]:
+        """Returns a dummy move."""
         return (0, 0)
 
 
@@ -25,7 +35,7 @@ class TestNewBoard(TestGameEngine):
     """Tests the GameEngine's board initialization (via _new_board)."""
 
     def test_initial_board_state(self):
-        """Test that the board attribute is a 3x3 grid with all positions set to 'None'"""
+        """Test that the board attribute is a 3x3 grid with all positions set to 'None'."""
         board = self.game.board
 
         self.assertEqual(len(board), 3)  # Check there are 3 rows
@@ -53,7 +63,7 @@ class TestMakeMove(TestGameEngine):
         self.assertEqual(self.game.board[1][1], "O")
 
     def test_make_move_mutates_board(self):
-        """Tests that make_move modifies the internal board state (mutation property)"""
+        """Tests that make_move modifies the internal board state (mutation property)."""
         original_board_reference = self.game.board
         self.game.make_move((0, 0))
 
@@ -64,32 +74,33 @@ class TestGetWinner(TestGameEngine):
     """Tests the get_winner method across all win/non-win conditions."""
 
     def test_get_winner_empty_board(self):
-        """Tests that a brand new, empty board (all None values) is correctly identified as having no
-        winner (returns None)."""
+        """Tests that a brand new, empty board is correctly identified as having no winner."""
         result = self.game.get_winner()
         self.assertIsNone(result)
 
     def test_get_winner_almost_win(self):
-        """Tests a partial board setup containing multiple two-in-a-row patterns to ensure no premature
-        winner is declared (returns None)."""
+        """Tests a partial board setup containing multiple two-in-a-row patterns.
+
+        Ensures no premature winner is declared.
+        """
         self.game.board = [["X", "X", None], ["O", "O", None], [None, "X", "O"]]
         result = self.game.get_winner()
         self.assertIsNone(result)
 
     def test_get_winner_horizontal_win(self):
-        """Tests that a horizontal win (three identical, non-None symbols in a row) is correctly detected."""
+        """Tests that a horizontal win is correctly detected."""
         self.game.board = [["X", "X", None], ["O", "O", None], ["X", "X", "X"]]
         result = self.game.get_winner()
         self.assertEqual(result, "X")
 
     def test_get_winner_vertical_win(self):
-        """Tests that a vertical win (three identical, non-None symbols in a row) is correctly detected."""
+        """Tests that a vertical win is correctly detected."""
         self.game.board = [["X", "X", None], ["X", "O", None], ["X", "O", "O"]]
         result = self.game.get_winner()
         self.assertEqual(result, "X")
 
     def test_get_winner_diagonal_win(self):
-        """Tests that a diagonal win (three identical, non-None symbols in a row) is correctly detected."""
+        """Tests that a diagonal win is correctly detected."""
         self.game.board = [["X", "X", "O"], ["O", "O", None], ["O", "X", "X"]]
         result = self.game.get_winner()
         self.assertEqual(result, "O")
@@ -99,12 +110,12 @@ class TestIsBoardFull(TestGameEngine):
     """Tests the is_board_full method for draw conditions."""
 
     def test_is_board_full_empty(self):
-        """Tests that a brand new, empty board is correctly identified as NOT full (False)."""
+        """Tests that a brand new, empty board is correctly identified as NOT full."""
         result = self.game.is_board_full()
         self.assertFalse(result)
 
     def test_is_board_full_true(self):
-        """Tests that a completely occupied board is correctly identified as full (True)."""
+        """Tests that a completely occupied board is correctly identified as full."""
         self.game.board = [["X", "X", "O"], ["O", "O", "X"], ["O", "X", "X"]]
         result = self.game.is_board_full()
         self.assertTrue(result)
@@ -114,12 +125,12 @@ class TestIsValidMove(TestGameEngine):
     """Tests the is_valid_move method to ensure it correctly identifies empty and occupied spots."""
 
     def test_is_valid_move_true(self):
-        """Tests that an empty spot (None) is correctly reported as a valid move (True)."""
+        """Tests that an empty spot (None) is correctly reported as a valid move."""
         result = self.game.is_valid_move((0, 0))
         self.assertTrue(result)
 
     def test_is_valid_move_false(self):
-        """Tests that an occupied spot ('X') is correctly reported as an invalid move (False)."""
+        """Tests that an occupied spot ('X') is correctly reported as an invalid move."""
         self.game.board[0][0] = "X"
         result = self.game.is_valid_move((0, 0))
         self.assertFalse(result)
@@ -129,7 +140,7 @@ class TestGameEngineUtilities(TestGameEngine):
     """Tests the new utility methods added to support the main controller loop."""
 
     def test_get_current_player(self):
-        """Tests that get_current_player returns the correct object. Implicitly tests switch_player."""
+        """Tests that get_current_player returns the correct object."""
         self.assertIs(self.game.get_current_player(), self.player_x)
         self.game.switch_player()
         self.assertIs(self.game.get_current_player(), self.player_o)

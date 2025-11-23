@@ -1,34 +1,43 @@
+"""Unit tests for the Player Factory.
+
+This module verifies that the `get_player_instances` factory function correctly instantiates
+and orders players based on the provided configuration dictionary, including handling Human vs Human
+and Human vs AI scenarios.
+"""
+
 import unittest
 from unittest.mock import patch
-from src.core.player_factory import get_player_instances
-from src.players import HumanPlayer, AbstractPlayer
+
 from src.core import PlayerType
+from src.core.player_factory import get_player_instances
+from src.players import AbstractPlayer, HumanPlayer
 
 
 class MockAIPlayer(AbstractPlayer):
     """A mock class to ensure the factory correctly returns the AI type."""
 
     def get_move(self):
+        """Returns a dummy move."""
         return (0, 0)
 
 
 @patch.object(PlayerType, "get_player_class_by_key", return_value=MockAIPlayer)
 class TestPlayerFactory(unittest.TestCase):
+    """Test suite for the player factory logic."""
 
     # --- Helper Method to Structure Inputs ---
-    def get_setup_data(
-        self, p1_name: str, p1_marker: str, p2_name: str, p2_type: str
-    ) -> dict:
+    def get_setup_data(self, p1_name: str, p1_marker: str, p2_name: str, p2_type: str) -> dict:
         """Returns setup data for a game configuration, used by the player factory.
 
         Args:
-            p1_name (str): Name of player 1.
-            p1_marker (str): Marker for player 1 ("X" or "O").
-            p2_name (str): Name of player 2.
-            p2_type (str): Difficulty key for player 2 (e.g., "0" for human, "4" for Minimax AI).
+            p1_name: Name of player 1.
+            p1_marker: Marker for player 1 ("X" or "O").
+            p2_name: Name of player 2.
+            p2_type: Difficulty key for player 2 (e.g., "0" for human, "4" for Minimax AI).
 
         Returns:
-            dict[str, str]: Dictionary formatted for use with get_player_instances()."""
+            dict[str, str]: Dictionary formatted for use with get_player_instances().
+        """
         return {
             "p1_name": p1_name,
             "p1_marker": p1_marker,
@@ -48,7 +57,11 @@ class TestPlayerFactory(unittest.TestCase):
         mock_get_class.assert_called_once_with(PlayerType.IMPOSSIBLE.key)
 
     def test_factory_creates_ai_x_vs_p1_o(self, mock_get_class):
-        """Verifies P1 chooses 'O' and players are swapped to return (X, O)."""
+        """Verifies P1 chooses 'O' and players are swapped to return (X, O).
+
+        If the human chooses 'O', the factory should put the AI (which becomes 'X')
+        in the first position of the returned tuple.
+        """
         data = self.get_setup_data("Alice", "O", "Bot", PlayerType.IMPOSSIBLE.key)
         p_x, p_o = get_player_instances(data)
 

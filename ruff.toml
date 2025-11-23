@@ -1,0 +1,43 @@
+line-length = 100
+
+exclude = [
+    ".bzr",
+    ".direnv", 
+    ".eggs",
+    ".git",
+    ".venv",
+    "__pycache__",
+    "node_modules",
+]
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings  
+    "F",    # Pyflakes
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "I",    # isort
+    "N",    # pep8-naming
+    "D",    # pydocstyle
+    "ANN"   # flake8-annotations
+]
+ignore = ["ANN204"]
+
+# Allow fixing specific rules
+fixable = ["ALL"]
+unfixable = []
+
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[per-file-ignores]
+"tests/*" = ["ANN"]

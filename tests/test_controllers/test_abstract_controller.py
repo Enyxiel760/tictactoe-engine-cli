@@ -1,17 +1,26 @@
+"""Unit tests for the AbstractController.
+
+This module verifies the functionality of the AbstractController, specifically focusing on game
+setup, dependency injection, and the correct initialization of the game engine and players.
+"""
+
 import unittest
 from unittest.mock import MagicMock, patch
+
 from src.controllers import AbstractController
-from src.players import HumanPlayer, AbstractAIPlayer
 from src.core.engine import GameEngine
+from src.players import AbstractAIPlayer, HumanPlayer
 
 
 class TestController(AbstractController):
-    """A lightweight test double for AbstractController, used to isolate controller logic during unit tests.
+    """A lightweight test double for AbstractController.
 
-    This stub replaces the view with a MagicMock and disables runtime behavior in `run()`.
+    Used to isolate controller logic during unit tests. This stub replaces the view with a
+    MagicMock and disables runtime behavior in `run()`.
     """
 
     def __init__(self):
+        """Initialize the test controller with a mock view."""
         self.view = MagicMock()
 
     def run(self):
@@ -22,8 +31,8 @@ class TestController(AbstractController):
 class TestAbstractController(unittest.TestCase):
     """Unit tests for AbstractController setup logic using mocked dependencies.
 
-    This test suite verifies that the controller correctly initializes the game engine and configures players
-    when provided with valid configuration data and mocked player instances.
+    This test suite verifies that the controller correctly initializes the game engine and
+    configures players when provided with valid configuration data and mocked player instances.
     """
 
     def setUp(self):
@@ -36,15 +45,8 @@ class TestAbstractController(unittest.TestCase):
     def test_setup_game_succeeds(self, mock_get_players):
         """Verifies that setup_game() succeeds when valid config and player instances are returned.
 
-        Mocks:
-            - controller.view.get_game_config: returns a valid configuration dictionary
-            - get_player_instances: returns two mock player objects
-
-        Asserts:
-            - setup_game() returns True
-            - controller.engine is an instance of GameEngine
-            - view.set_engine is called with the initialized engine
-            - mock_player_o.set_engine is called with the initialized engine
+        This test ensures that the engine is instantiated, dependencies are injected into the view
+        and AI players, and the setup method returns True.
         """
         mock_config = {"p1_name": "Test", "p1_marker": "X", "p2_type": "1"}
         self.controller.view.get_game_config.return_value = mock_config

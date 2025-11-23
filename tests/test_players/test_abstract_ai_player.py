@@ -1,4 +1,11 @@
+"""Unit tests for the AbstractAIPlayer base class.
+
+This module verifies the behavior of the intermediate AI player class, specifically focusing on
+dependency injection, abstract method enforcement, and the delegation of move calculation.
+"""
+
 import unittest
+
 from src.players import AbstractAIPlayer
 
 
@@ -6,14 +13,13 @@ class MockEngine:
     """Provides a dummy GameEngine instance for testing dependency injection."""
 
     def get_board_state(self):
-        # Always return a specific state for predictable testing
+        """Always return a specific state for predictable testing."""
         return [["X", None, None], [None, None, None], [None, None, None]]
 
 
 class IncompleteAIPlayer(AbstractAIPlayer):
     """Fails to implement _calculate_move to test contract enforcement."""
 
-    # Note: This still corretly inherits and implements get_move()
     pass
 
 
@@ -24,13 +30,13 @@ class CompleteAIPlayer(AbstractAIPlayer):
     received_board_state = None
 
     def _calculate_move(self, board_state):
-        # Store the received state here for later test verification
+        """Store the received state here for later test verification."""
         CompleteAIPlayer.received_board_state = board_state
-
         return (1, 1)
 
 
 class TestAbstractAIPlayer(unittest.TestCase):
+    """Test suite for AbstractAIPlayer logic."""
 
     def setUp(self):
         """Set up the mock dependencies and the AbstractAIPlayer instance once per test."""
@@ -42,10 +48,11 @@ class TestAbstractAIPlayer(unittest.TestCase):
     def test_abstract_enforces_calculate_move(self):
         """Tests that subclasses must implement the _calculate_move method.
 
-        Note:
-        Whilst this is generally redundant (testing the language, not the logic).
-        This test is retained here as an academic exercise."""
+        Note: While testing language features is generally redundant, this confirms the abstract
+        inheritance structure is correctly defined.
+        """
         with self.assertRaisesRegex(TypeError, "Can't instantiate abstract class"):
+            # Abstract classes cannot be instantiated if abstract methods are missing
             IncompleteAIPlayer(name="Fail", marker="F")
 
     def test_base_initialization_is_inherited(self):
@@ -54,15 +61,19 @@ class TestAbstractAIPlayer(unittest.TestCase):
         self.assertEqual(self.ai_player.marker, "O")
 
     def test_set_engine_stores_dependency(self):
-        """Tests that the set_engine method corrrectly injects and stores the GameEngine reference."""
+        """Tests the set_engine method corrrectly injects and stores the GameEngine reference."""
         self.ai_player.set_engine(self.mock_engine)
         self.assertIs(self.ai_player._game, self.mock_engine)
 
     def test_delegation_passes_correct_board_state(self):
-        """Tests the data flow: get_move must call the engine and pass the board state to the
-        _calculate_move method."""
+        """Tests the data flow.
+
+        Verifies that get_move calls the engine and passes the board state to the
+        _calculate_move method.
+        """
         self.ai_player.set_engine(self.mock_engine)
         self.ai_player.get_move()
+
         expected_board = self.mock_engine.get_board_state()
         self.assertEqual(CompleteAIPlayer.received_board_state, expected_board)
 

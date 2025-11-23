@@ -1,19 +1,26 @@
-from typing import Tuple
+"""Human player implementation for Tic Tac Toe.
+
+Defines the HumanPlayer class, which handles user input via the command line to determine moves.
+"""
+
 from .abstract_player import AbstractPlayer
 
 
 class HumanPlayer(AbstractPlayer):
-    """Creates a human player object"""
+    """Represents a human player in the game.
 
-    def get_move(self) -> Tuple[int, int]:
+    Interacts with the user via standard input to acquire move coordinates.
+    """
+
+    def get_move(self) -> tuple[int, int]:
         """Prompts the current player for their move (1-9) and validates the input.
 
-        This function loops indefinitely, handling non-numeric input and out-of-range
-        numbers until a valid move number (1 through 9) is entered. It then converts
-        the 1-indexed input into  0-indexed (row, column) coordinates.
+        Loops indefinitely until a valid numeric input between 1 and 9 is received. Converts
+        the 1-indexed input into 0-indexed (row, column) coordinates.
 
         Returns:
-            Tuple[int, int]: The 0-indexed (row, column) coordinates for the move."""
+            tuple[int, int]: The 0-indexed (row, column) coordinates for the move.
+        """
         while True:
             try:
                 prompt = f"{self.name}, choose where to place your next {self.marker} (1-9): "
