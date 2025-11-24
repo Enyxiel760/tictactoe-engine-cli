@@ -8,9 +8,10 @@ import random
 import tkinter as tk
 from typing import Any
 
-from src import views
 from src.controllers import AbstractController
 from src.core import GameState
+from src.players import HumanPlayer
+from src.views import GUIView
 
 
 class GUIController(AbstractController):
@@ -32,7 +33,7 @@ class GUIController(AbstractController):
         Sets up the view and binds the controller to it.
         """
         self.root = tk.Tk()
-        self.view = views.GUIView(self.root)
+        self.view: GUIView = GUIView(self.root)
         self.view.set_controller(self)
 
         # Stores the current player profile data in a structured way (for future expansion)
@@ -47,6 +48,48 @@ class GUIController(AbstractController):
         self.view.show_frame(GameState.Frame.WELCOME_SCREEN)
         self.root.mainloop()
 
+    def _launch_game(self) -> None:
+        """Finalizes configuration, initializes the engine, and starts the gameplay loop.
+
+        This method leverages the parent setup_game() to instantiate the engine and players, then
+        transitions the view to the gameplay screen and initiates the first turn.
+        """
+        if not self.setup_game():
+            return
+
+        self.view.show_frame(GameState.Frame.GAMEPLAY)
+        self.view.display_game_state()
+        self._advance_turn()
+
+    def _advance_turn(self) -> None:
+        """Checks the current player and determines the next action (wait or trigger AI).
+
+        If the current player is an AI, this method schedules the move processing to run
+        after a short delay, ensuring the UI has time to update. If Human, it simply waits
+        for the UI event (button click).
+        """
+        current_player = self.engine.get_current_player()
+
+        # Update status message (e.g. "Player X's Turn")
+        message = f"{current_player.name}'s Turn ({current_player.marker})"
+        self.view.display_message(message)
+
+        if not isinstance(current_player, HumanPlayer):
+            # AI Turn: Schedule execution to prevent UI freezing immediately
+            self.root.after(100, self._process_ai_move)
+
+    def _process_ai_move(self) -> None:
+        """Executes the AI's move logic and transitions state.
+
+        This is the callback function triggered by _advance_turn for AI players.
+        """
+        current_player = self.engine.get_current_player()
+        move = current_player.get_move()
+
+        self.engine.make_move(move)
+        self.view.display_game_state()
+        self._handle_post_move()
+
     def handle_move(self, row: int, col: int) -> None:
         """Processes a move received from the GUI and updates the game state.
 
@@ -57,27 +100,34 @@ class GUIController(AbstractController):
             row: The row index of the move.
             col: The column index of the move.
         """
-        if self.engine is None:
-            self.view.display_error("Game engine is not initialized.")
+        # Prevent human interaction during AI turn
+        if not isinstance(self.engine.get_current_player(), HumanPlayer):
             return
 
         move = (row, col)
 
         if self.engine.is_valid_move(move):
             self.engine.make_move(move)
-
-            is_over, winner_marker = self.engine.check_game_status()
             self.view.display_game_state()
-
-            if is_over:
-                winner_name = self.engine.get_winner_name(winner_marker)
-                self.view.display_winner(winner_name)
-                # Future: Add logic to lock board or show game over screen
-            else:
-                self.engine.switch_player()
-
+            self._handle_post_move()
         else:
             self.view.display_error("Invalid move. Can only place marker on empty spots.")
+
+    def _handle_post_move(self) -> None:
+        """Common logic executed after a valid move (Human or AI).
+
+        Checks for game over conditions. If the game continues, switches the player
+        and triggers the next turn cycle.
+        """
+        is_over, winner_marker = self.engine.check_game_status()
+
+        if is_over:
+            winner_name = self.engine.get_winner_name(winner_marker)
+            self.view.display_winner(winner_name)
+            # TODO: lock board/show game over overlay
+        else:
+            self.engine.switch_player()
+            self._advance_turn()
 
     def handle_welcome_start(self) -> None:
         """Handles the welcome screen input event.

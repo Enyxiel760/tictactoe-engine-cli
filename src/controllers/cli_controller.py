@@ -33,7 +33,7 @@ class CLIController(AbstractController):
         self._play_game()
         self._handle_game_over()
 
-    def _play_game(self):
+    def _play_game(self) -> None:
         """Execute the main game loop.
 
         Alternates turns between players until the game concludes. Handles move validation, board
@@ -69,7 +69,7 @@ class CLIController(AbstractController):
             self.engine.make_move(move)
             self.engine.switch_player()
 
-    def _handle_game_over(self):
+    def _handle_game_over(self) -> None:
         """Finalize the game.
 
         Renders the final board state and announces the winner.
