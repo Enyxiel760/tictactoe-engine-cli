@@ -113,6 +113,11 @@ class GUIView(AbstractView):
         return creation_frame
 
     def _create_menu_frame(self) -> tk.Frame:
+        """Creates the main menu screen for selecting game modes.
+
+        Returns:
+            tk.Frame: The frame containing game mode selection buttons.
+        """
         menu_frame = tk.Frame(self.container, bg="red")
 
         tk.Label(menu_frame, text="Select Game Mode", font=("Arial", 16)).pack(pady=5)
@@ -134,12 +139,41 @@ class GUIView(AbstractView):
         return menu_frame
 
     def _create_gameplay_frame(self) -> tk.Frame:
-        """Creates the main gameplay screen with the board and status bar.
+        """Creates the main gameplay screen with board and status bar.
+
+        Constructs the 3x3 grid of buttons and the status label, initializing the
+        self.board_buttons matrix for coordinate mapping.
 
         Returns:
             tk.Frame: The gameplay frame.
         """
-        pass
+        gameplay_frame = tk.Frame(self.container, bg="green")
+
+        # Board Container
+        board_container = tk.Frame(gameplay_frame, bg="black")
+        board_container.grid(**ORIGIN)
+
+        self.board_buttons = []
+        for row in range(3):
+            button_row = []
+            for col in range(3):
+                button = tk.Button(
+                    board_container,
+                    text=" ",
+                    width=4,
+                    height=2,
+                    font=("Arial", 36, "bold"),
+                    command=lambda r=row, c=col: self.handle_click(r, c),
+                )
+                button.grid(row=row, column=col, padx=2, pady=2)
+                button_row.append(button)
+            self.board_buttons.append(button_row)
+
+        # Status Bar
+        self.status_label = tk.Label(gameplay_frame, text="Loading...", font=("Arial", 16), pady=20)
+        self.status_label.grid(row=3, column=0, columnspan=3, sticky="ew", pady=5)
+
+        return gameplay_frame
 
     def _create_game_over_frame(self) -> tk.Frame:
         """Creates a game over frame.
@@ -181,7 +215,8 @@ class GUIView(AbstractView):
     def show_frame(self, state: GameState.Frame) -> None:
         """Displays the requested screen based on the current GameState.Frame.
 
-        If the frame has not been created yet, it invokes the corresponding factory method.
+        If the frame has not been created yet, it invokes the corresponding factory method,
+        grids the frame into the container, and raises it to the front.
 
         Args:
             state: The game state enum corresponding to the frame to display.
@@ -238,12 +273,14 @@ class GUIView(AbstractView):
         return self._controller._current_game_config
 
     def display_game_state(self) -> None:
-        """Abstract method to display the current state of the board.
+        """Updates the board buttons to reflect the engine's state."""
+        board = self._game.get_board_state()
 
-        This method is called by the Controller during the game loop and takes no direct arguments.
-        The implementation must internally fetch the board state from self._game.
-        """
-        pass
+        for row in range(3):
+            for col in range(3):
+                marker = board[row][col]
+                text = marker if marker else " "
+                self.board_buttons[row][col].config(text=text)
 
     def display_message(self, message: str) -> None:
         """Displays general info for the user via a popup.
@@ -251,7 +288,8 @@ class GUIView(AbstractView):
         Args:
             message: The message string to display.
         """
-        pass
+        if hasattr(self, "status_label"):
+            self.status_label.config(text=message, fg="black")
 
     def display_error(self, message: str) -> None:
         """Displays warning or error feedback via a popup.
@@ -259,7 +297,8 @@ class GUIView(AbstractView):
         Args:
             message: The error message to display.
         """
-        pass
+        if hasattr(self, "status_label"):
+            self.status_label.config(text=f"⚠️ {message}", fg="red")
 
     def display_winner(self, winner_name: str | None) -> None:
         """Announces the end of the game.
@@ -267,38 +306,12 @@ class GUIView(AbstractView):
         Args:
             winner_name: The name of the winner, or None if it is a draw.
         """
-        pass
+        if winner_name:
+            msg = f"🎉 Winner: {winner_name}! 🎉"
+            color = "green"
+        else:
+            msg = "🤝 It's a draw! 🤝"
+            color = "blue"
 
-    # --- TODO:  refactor into create_gameplay_frame ---
-    def _build_board(self, master: tk.Widget) -> None:
-        """Create and place the 3x3 grid of game buttons.
-
-        Args:
-            master (tk.Widget): The parent widget that will contain the buttons.
-        """
-        for row in range(3):
-            button_row = []
-            for col in range(3):
-                button = tk.Button(
-                    master,
-                    text=" ",
-                    width=4,
-                    height=2,
-                    font=("Arial", 24),
-                    command=lambda r=row, c=col: self.handle_click(r, c),
-                )
-                button.grid(row=row, column=col, sticky="nsew", padx=2, pady=2)
-                button_row.append(button)
-            self.board_buttons.append(button_row)
-
-    # --- TODO:  refactor into create_gameplay_frame ---
-    def _build_status_bar(self, master: tk.Widget) -> None:
-        """Create and place a status bar below the game board.
-
-        Args:
-            master (tk.Widget): The parent widget that will contain the status label.
-        """
-        self.status_label = tk.Label(
-            master, text="Welcome!, Player X's turn", font=("Arial", 12), anchor="w"
-        )
-        self.status_label.grid(row=3, column=0, columnspan=3, sticky="ew", pady=5)
+        if hasattr(self, "status_label"):
+            self.status_label.config(text=msg, fg=color)
