@@ -210,6 +210,101 @@ class GUIView(AbstractView):
 
         return overlay_frame
 
+    def _create_two_player_setup_overlay(self) -> tk.Frame:
+        """Creates the overlay for configuring a two-player game.
+
+        Prompts for Player 2's name and allows Player 1 to choose their marker. The view
+        enforces mutually exclusive marker selection by toggling the buttons and updating
+        Player 2's assigned marker automatically.
+
+        Returns:
+            tk.Frame: The overlay frame containing the setup form.
+        """
+        overlay_frame = tk.Frame(self.container, padx=20, pady=20, bg="#202020")
+        p1_name = self._controller._profile_data.get("p1_name", "Player 1")
+
+        # --- Variables ---
+        p2_name_var = tk.StringVar()
+        p1_marker_var = tk.StringVar(value="X")  # Default P1 to X
+
+        # --- Helper for button styling ---
+        def get_btn_style(active: bool) -> dict:
+            return {
+                "relief": "sunken" if active else "raised",
+                "bg": "#606060" if active else "#303030",
+                "fg": "white" if active else "#888",
+            }
+
+        # --- Logic: Cross-Linked Toggle Mechanism ---
+        def update_markers(p1_choice: str) -> None:
+            """Updates all 4 buttons based on Player 1's marker choice."""
+            p1_marker_var.set(p1_choice)
+
+            # P1 State
+            p1_x_active = p1_choice == "X"
+            p1_btn_x.config(**get_btn_style(p1_x_active))
+            p1_btn_o.config(**get_btn_style(not p1_x_active))
+
+            # P2 State (Opposite of P1)
+            p2_x_active = not p1_x_active
+            p2_btn_x.config(**get_btn_style(p2_x_active))
+            p2_btn_o.config(**get_btn_style(not p2_x_active))
+
+        # --- Row 1: Player 1 Setup ---
+        tk.Label(
+            overlay_frame,
+            text=f"Player 1: {p1_name}",
+            font=("Arial", 12),
+            fg="white",
+            bg="#202020",
+        ).grid(row=0, column=0, sticky="w", padx=10, pady=10)
+
+        p1_btn_frame = tk.Frame(overlay_frame, bg="#202020")
+        p1_btn_frame.grid(row=0, column=1, padx=10)
+
+        p1_btn_x = tk.Button(p1_btn_frame, text="X", width=4, command=lambda: update_markers("X"))
+        p1_btn_o = tk.Button(p1_btn_frame, text="O", width=4, command=lambda: update_markers("O"))
+        p1_btn_x.pack(side="left", padx=2)
+        p1_btn_o.pack(side="left", padx=2)
+
+        # --- Row 2: Player 2 Setup ---
+        p2_input_frame = tk.Frame(overlay_frame, bg="#202020")
+        p2_input_frame.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+
+        tk.Label(
+            p2_input_frame, text="Player 2: ", font=("Arial", 12), fg="white", bg="#202020"
+        ).pack(side="left")
+        tk.Entry(p2_input_frame, textvariable=p2_name_var, width=12).pack(side="left")
+
+        p2_btn_frame = tk.Frame(overlay_frame, bg="#202020")
+        p2_btn_frame.grid(row=1, column=1, padx=10)
+
+        p2_btn_x = tk.Button(p2_btn_frame, text="X", width=4, command=lambda: update_markers("O"))
+        p2_btn_o = tk.Button(p2_btn_frame, text="O", width=4, command=lambda: update_markers("X"))
+        p2_btn_x.pack(side="left", padx=2)
+        p2_btn_o.pack(side="left", padx=2)
+
+        # Initialize Default State (P1=X)
+        update_markers("X")
+
+        # --- Row 3: Start Button ---
+        tk.Button(
+            overlay_frame,
+            text="START GAME",
+            font=("Arial", 12, "bold"),
+            bg="#0066cc",
+            fg="white",
+            width=20,
+            command=lambda: self._controller.handle_2p_config_submission(
+                p2_name_var.get(), p1_marker_var.get()
+            ),
+        ).grid(row=2, column=0, columnspan=2, pady=20)
+
+        return overlay_frame
+
+    def _create_settings_overlay(self) -> tk.Frame:
+        pass
+
     # --- Navigation & Event Handling ---
 
     def show_frame(self, state: GameState.Frame) -> None:
@@ -288,7 +383,7 @@ class GUIView(AbstractView):
         Args:
             message: The message string to display.
         """
-        if hasattr(self, "status_label"):
+        if hasattr(self, "status_label") and self.status_label:
             self.status_label.config(text=message, fg="black")
 
     def display_error(self, message: str) -> None:
@@ -297,7 +392,7 @@ class GUIView(AbstractView):
         Args:
             message: The error message to display.
         """
-        if hasattr(self, "status_label"):
+        if hasattr(self, "status_label") and self.status_label:
             self.status_label.config(text=f"⚠️ {message}", fg="red")
 
     def display_winner(self, winner_name: str | None) -> None:
@@ -313,5 +408,5 @@ class GUIView(AbstractView):
             msg = "🤝 It's a draw! 🤝"
             color = "blue"
 
-        if hasattr(self, "status_label"):
+        if hasattr(self, "status_label") and self.status_label:
             self.status_label.config(text=msg, fg=color)

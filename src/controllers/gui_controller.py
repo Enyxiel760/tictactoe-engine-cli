@@ -177,12 +177,29 @@ class GUIController(AbstractController):
         self._launch_game()
 
     def handle_2p_select(self) -> None:
-        """Handle the 2-player menu input event.
+        """Handles the 2-player menu input event and displays the setup overlay."""
+        self.view._show_overlay(GameState.Overlay.TWO_PLAYER_SETUP)
 
-        Transitions the application from the main menu to the player creation screen.
+    def handle_2p_config_submission(self, p2_name: str, p1_marker: str) -> None:
+        """Finalizes 2-player configuration and launches the game.
+
+        Args:
+            p2_name: The name entered by the user for Player 2.
+            p1_marker: The marker ('X' or 'O') selected for Player 1.
         """
-        # TODO: Implement 2-player setup logic
-        pass
+        if not p2_name or not p2_name.strip():
+            self.view.display_error("Player 2 name cannot be empty.")
+            return
+
+        # Store the configuration state for the final factory assembly
+        self._current_game_config = {
+            "p1_name": self._profile_data.get("p1_name"),
+            "p1_marker": p1_marker,
+            "p2_type": "0",  # Human player key
+            "p2_name": p2_name.strip(),
+        }
+
+        self._launch_game()
 
 
 if __name__ == "__main__":

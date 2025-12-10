@@ -122,6 +122,52 @@ class TestAIConfigSubmission(TestGUIControllerBase):
         self.controller._launch_game.assert_called_once()
 
 
+class TestGUIControllerTwoPlayer(TestGUIControllerBase):
+    """Tests for the 2-Player specific flows in GUIController."""
+
+    def setUp(self):
+        """Sets up the controller with mocked dependencies."""
+        super().setUp()
+        self.controller._profile_data = {"p1_name": "Alice"}
+        self.controller._launch_game = MagicMock()
+
+    def test_handle_2p_select(self):
+        """Verifies that selecting 2-player mode opens the setup overlay."""
+        self.controller.handle_2p_select()
+
+        self.controller.view._show_overlay.assert_called_once_with(
+            GameState.Overlay.TWO_PLAYER_SETUP
+        )
+
+    def test_submission_validates_empty_name(self):
+        """Ensures that an empty Player 2 name triggers an error."""
+        self.controller.handle_2p_config_submission("", "X")
+
+        self.controller.view.display_error.assert_called_with("Player 2 name cannot be empty.")
+        self.controller._launch_game.assert_not_called()
+
+    def test_submission_validates_whitespace_name(self):
+        """Ensures that a whitespace-only Player 2 name triggers an error."""
+        self.controller.handle_2p_config_submission("   ", "X")
+
+        self.controller.view.display_error.assert_called_with("Player 2 name cannot be empty.")
+        self.controller._launch_game.assert_not_called()
+
+    def test_submission_success_configuration(self):
+        """Verifies correct configuration assembly and game launch on valid input."""
+        self.controller.handle_2p_config_submission("Bob", "O")
+
+        expected_config = {
+            "p1_name": "Alice",
+            "p1_marker": "O",
+            "p2_type": "0",  # Human
+            "p2_name": "Bob",
+        }
+
+        self.assertEqual(self.controller._current_game_config, expected_config)
+        self.controller._launch_game.assert_called_once()
+
+
 # --- Tests for Launch & Game Loop Logic ---
 
 
